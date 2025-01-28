@@ -2,7 +2,7 @@
  * Validates the Contact Person section of the form.
  * Ensures the "Last Name", "First Name", and "Email" fields are required if any field in the row is filled.
  */
-function checkContactPerson(){
+function checkContactPerson() {
     $('#group-contactperson').children('.row').each(function () {
         var row = $(this);
         // Defines the relevant fields for the Contact Person section
@@ -31,7 +31,7 @@ function checkContactPerson(){
  * Validates the Contributor Person section of the form.
  * Ensures the "Last Name", "First Name", and "Role" fields are required if any field in the row is filled.
  */
-function checkContributorPerson(){
+function checkContributorPerson() {
     $('#group-contributorperson').children('.row').each(function () {
         var row = $(this);
         // Defines the relevant fields for the Contributor Person section
@@ -63,7 +63,7 @@ function checkContributorPerson(){
  * Validates the Contributor Organisation section of the form.
  * Ensures the "Name" and "Role" fields are required if any field in the row is filled.
  */
-function checkContributorOrganisation(){
+function checkContributorOrganisation() {
     $('#group-contributororganisation').children('.row').each(function () {
         var row = $(this);
         // Defines the relevant fields for the Contributor Organization section
@@ -72,10 +72,10 @@ function checkContributorOrganisation(){
             role: row.find('[id^="input-contributor-organisationrole"]'),
             affiliation: row.find('[id^="input-contributor-organisationaffiliation"]')
         };
-    
+
         // Checks if any field in the row is filled
         var isAnyFieldFilled = Object.values(fields).some(field => field.val() && field.val().trim() !== '');
-    
+
         // Sets or removes the 'required' attribute based on the fill status
         if (isAnyFieldFilled) {
             fields.name.attr('required', 'required');
@@ -84,7 +84,131 @@ function checkContributorOrganisation(){
             fields.name.removeAttr('required');
             fields.role.removeAttr('required');
         }
-    
+
+    });
+}
+
+/**
+ * Dynamically applies or removes the 'required' attribute to the latitude and longitude fields 
+ * based on the following conditions:
+ * - When latMin is filled, longMin becomes required and vice versa.
+ * - When latMax is filled, longMax becomes required and vice versa.
+ * - When either latMax or longMax is filled, latMin and longMin become required.
+ * - If all fields are empty, none of the fields will be required.
+ * 
+ * This function operates on each row within the #group-stc container that has the attribute 'tsc-row'.
+ */
+function checkSpatialCoverage() {
+    $('#group-stc').find('[tsc-row]').each(function () {
+        var row = $(this);
+
+        // Locate the input fields for latitude and longitude
+        var latMin = row.find('[id^="input-stc-latmin"]');
+        var latMax = row.find('[id^="input-stc-latmax"]');
+        var longMin = row.find('[id^="input-stc-longmin"]');
+        var longMax = row.find('[id^="input-stc-longmax"]');
+
+        // Check if the fields are filled (not empty or whitespace only)
+        var isLatMinFilled = latMin.val() && latMin.val().trim() !== '';
+        var isLatMaxFilled = latMax.val() && latMax.val().trim() !== '';
+        var isLongMinFilled = longMin.val() && longMin.val().trim() !== '';
+        var isLongMaxFilled = longMax.val() && longMax.val().trim() !== '';
+
+        // If all fields are empty, none of them should be required
+        if (!isLatMinFilled && !isLatMaxFilled && !isLongMinFilled && !isLongMaxFilled) {
+            latMin.removeAttr('required');
+            latMax.removeAttr('required');
+            longMin.removeAttr('required');
+            longMax.removeAttr('required');
+        } else {
+            // When either latMax or longMax is filled, latMin and longMin and the other max become required
+            if (isLatMaxFilled || isLongMaxFilled) {
+                latMin.attr('required', 'required');
+                longMin.attr('required', 'required');
+                latMax.attr('required', 'required');
+                longMax.attr('required', 'required');
+            } else {
+                latMax.removeAttr('required');
+                longMax.removeAttr('required');
+            }
+
+            // When latMin is filled, longMin becomes required and vice versa
+            if (isLatMinFilled) {
+                longMin.attr('required', 'required');
+            }
+
+
+            if (isLongMinFilled) {
+                latMin.attr('required', 'required');
+            }
+
+        }
+    });
+}
+
+/**
+ * Dynamically applies or removes the 'required' attribute to the date, time, and timezone fields 
+ * based on the following conditions:
+ * - When dateStart is filled, dateEnd becomes required and vice versa.
+ * - When timeStart is filled, timeEnd becomes required, as well as both date fields and vice versa.
+ * - When any date or time field is filled, the timezone field becomes required.
+ * - If all fields are empty, none of the fields will be required.
+ * 
+ * This function operates on each row within the #group-stc container that has the attribute 'tsc-row'.
+ */
+function checkTemporalCoverage() {
+    $('#group-stc').find('[tsc-row]').each(function () {
+        var row = $(this);
+
+        // Locate the input fields for start and end dates/times and timezone
+        var dateStart = row.find('[id^="input-stc-datestart"]');
+        var timeStart = row.find('[id^="input-stc-timestart"]');
+        var dateEnd = row.find('[id^="input-stc-dateend"]');
+        var timeEnd = row.find('[id^="input-stc-timeend"]');
+        var timezone = row.find('[id^="input-stc-timezone"]');
+
+        // Check if the fields are filled (not empty or whitespace only)
+        var isDateStartFilled = dateStart.val() && dateStart.val().trim() !== '';
+        var isTimeStartFilled = timeStart.val() && timeStart.val().trim() !== '';
+        var isDateEndFilled = dateEnd.val() && dateEnd.val().trim() !== '';
+        var isTimeEndFilled = timeEnd.val() && timeEnd.val().trim() !== '';
+
+        // If all temporal fields are empty, none of them should be required
+        if (!isDateStartFilled && !isTimeStartFilled && !isDateEndFilled && !isTimeEndFilled) {
+            dateStart.removeAttr('required');
+            timeStart.removeAttr('required');
+            dateEnd.removeAttr('required');
+            timeEnd.removeAttr('required');
+            timezone.removeAttr('required');
+        } else {
+            // Make end date required if start date is filled and vice versa
+            if (isDateStartFilled || isDateEndFilled) {
+                dateStart.attr('required', 'required');
+                dateEnd.attr('required', 'required');
+            } else {
+                dateStart.removeAttr('required');
+                dateEnd.removeAttr('required');
+            }
+
+            // Make timeEnd, dates, and timezone required if timeStart is filled and vice versa
+            if (isTimeStartFilled || isTimeEndFilled) {
+                timeStart.attr('required', 'required');
+                timeEnd.attr('required', 'required');
+                dateStart.attr('required', 'required');
+                dateEnd.attr('required', 'required');
+                timezone.attr('required', 'required');
+            } else {
+                timeStart.removeAttr('required');
+                timeEnd.removeAttr('required');
+            }
+
+            // Make timezone required if any date or time field is filled
+            if (isDateStartFilled || isDateEndFilled || isTimeStartFilled || isTimeEndFilled) {
+                timezone.attr('required', 'required');
+            } else {
+                timezone.removeAttr('required');
+            }
+        }
     });
 }
 
@@ -123,7 +247,7 @@ function checkRelatedWork() {
  * Validates the Funding Reference section of the form.
  * Ensures the "Funder" field is required if either "Grant Number" or "Grant Name" fields are filled.
  */
-function checkFunder(){
+function checkFunder() {
     $('#group-fundingreference').children('.row').each(function () {
         var row = $(this);
         // Defines the relevant fields for the Funding Reference section
@@ -162,6 +286,10 @@ function checkMandatoryFields() {
     // Formgroup Contributor Organization
     checkContributorOrganisation();
 
+    // Formgroup Spacial and Temporal Coverage
+    checkSpatialCoverage();
+    checkTemporalCoverage();
+
     //Formgroup Related Work
     checkRelatedWork();
 
@@ -187,7 +315,15 @@ $(document).on('blur',
     'input[name="cbPersonLastname[]"], ' +  // Contributor Person Lastname
     'input[name="cbPersonFirstname[]"], ' + // Contributor Person Firstname
     'input[name="cbOrganisationName[]"],' +   // Contributor Organisation Name
-    'input[name="rIdentifier[]"]' ,            // Related Work Identifier
+    'input[name="tscLongitudeMax[]"],' +
+    'input[name="tscLongitudeMin[]"],' +
+    'input[name="tscLatitudeMin[]"],' +
+    'input[name="tscLatitudeMax[]"],' +
+    'input[name="tscDateStart[]"],' +
+    'input[name="tscDateEnd[]"],' +
+    'input[name="tscTimeStart[]"],' +
+    'input[name="tscTimeEnd[]"],' +
+    'input[name="rIdentifier[]"]',            // Related Work Identifier
     function () {
         // Check mandatory fields when user leaves any of these input fields
         checkMandatoryFields();
@@ -206,8 +342,8 @@ $(document).on('change',
     'input[name="OrganisationAffiliation[]"], ' + // Contributor Organisation Affiliation
     'select[name="relation[]"], ' +            // Related Work Relation (dropdown)
     'select[name="rIdentifierType[]"], ' +
-    'input[name="funder[]"]' ,                     // Funder field
-    
+    'input[name="funder[]"]',                     // Funder field
+
     function () {
         // Check mandatory fields when any of these fields' values change
         checkMandatoryFields();
