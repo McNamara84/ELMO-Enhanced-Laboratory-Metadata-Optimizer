@@ -5,6 +5,8 @@ use PHPUnit\Framework\TestCase;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 
+require_once __DIR__ . '/TestDatabaseSetup.php';
+
 class ApiTest extends TestCase
 {
     private $client;
@@ -14,8 +16,6 @@ class ApiTest extends TestCase
 
     protected function setUp(): void
     {
-        // Datenbankverbindung herstellen
-        require_once __DIR__ . '/../settings.php';
         global $connection;
         if (!$connection) {
             $connection = connectDb();
@@ -28,8 +28,12 @@ class ApiTest extends TestCase
             // Testdatenbank erstellen
             $connection->query("CREATE DATABASE " . $dbname);
             $connection->select_db($dbname);
-            // install.php ausführen
-            require __DIR__ . '/../install.php';
+
+            // Installation direkt ausführen
+            require_once __DIR__ . '/../install.php';
+            dropTables($connection);
+            createDatabaseStructure($connection);
+            insertLookupData($connection);
         }
 
         // HTTP Client Setup

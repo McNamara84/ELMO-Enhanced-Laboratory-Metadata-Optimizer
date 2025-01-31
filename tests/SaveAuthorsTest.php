@@ -6,6 +6,7 @@ use mysqli_sql_exception;
 require_once __DIR__ . '/../settings.php';
 require_once __DIR__ . '/../save/formgroups/save_resourceinformation_and_rights.php';
 require_once __DIR__ . '/../save/formgroups/save_authors.php';
+require_once __DIR__ . '/TestDatabaseSetup.php';
 
 /**
  * Testklasse für die Funktionalität zum Speichern von Autoren.
@@ -17,12 +18,6 @@ class SaveAuthorsTest extends TestCase
 {
     private $connection;
 
-    /**
-     * Setzt die Testumgebung auf.
-     * 
-     * Stellt eine Verbindung zur Testdatenbank her und erstellt
-     * die Datenbank falls sie nicht verfügbar ist.
-     */
     protected function setUp(): void
     {
         global $connection;
@@ -30,14 +25,21 @@ class SaveAuthorsTest extends TestCase
             $connection = connectDb();
         }
         $this->connection = $connection;
+
         // Überprüfen, ob die Testdatenbank verfügbar ist
         $dbname = 'mde2-msl-test';
-        if ($this->connection->select_db($dbname) === false) {
-            // Testdatenbank erstellen
-            $connection->query("CREATE DATABASE " . $dbname);
-            $connection->select_db($dbname);
-            // install.php ausführen
-            require 'install.php';
+        try {
+            if ($this->connection->select_db($dbname) === false) {
+                // Testdatenbank erstellen
+                $connection->query("CREATE DATABASE " . $dbname);
+                $connection->select_db($dbname);
+            }
+
+            // Datenbank für Tests aufsetzen
+            setupTestDatabase($connection);
+
+        } catch (\Exception $e) {
+            $this->fail("Fehler beim Setup der Testdatenbank: " . $e->getMessage());
         }
     }
 
