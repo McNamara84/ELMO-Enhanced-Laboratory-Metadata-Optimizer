@@ -8,21 +8,59 @@ OVERWRITTEN WHEN YOU RE-RUN CODE GENERATION.
 Refer to the Altova MapForce Documentation for further details.
 http://www.altova.com/mapforce
 -->
-<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xs="http://www.w3.org/2001/XMLSchema" exclude-result-prefixes="xs">
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:agt="http://www.altova.com/Mapforce/agt" xmlns:xs="http://www.w3.org/2001/XMLSchema" exclude-result-prefixes="agt xs">
 	<xsl:output method="xml" encoding="UTF-8" indent="yes"/>
+	<xsl:template name="agt:MapToDataCiteSchema45_var2">
+		<xsl:param name="par1"/>
+		<xsl:param name="par2"/>
+		<xsl:param name="par3"/>
+		<xsl:param name="par4"/>
+		<xsl:param name="par5"/>
+		<xsl:param name="par6"/>
+		<xsl:param name="par7"/>
+		<xsl:variable name="var3_nested">
+			<xsl:for-each select="$par2/SpatialTemporalCoverages/SpatialTemporalCoverage">
+				<xsl:variable name="var4_cur" select="."/>
+				<xsl:value-of select="number(boolean(timezone))"/>
+			</xsl:for-each>
+		</xsl:variable>
+		<xsl:variable name="var5_nested">
+			<xsl:for-each select="$par2/SpatialTemporalCoverages/SpatialTemporalCoverage">
+				<xsl:variable name="var6_cur" select="."/>
+				<xsl:value-of select="number(boolean(timeEnd))"/>
+			</xsl:for-each>
+		</xsl:variable>
+		<xsl:choose>
+			<xsl:when test="(boolean(translate(normalize-space($var3_nested), ' 0', '')) and boolean(translate(normalize-space($var5_nested), ' 0', '')))">
+				<xsl:for-each select="$par3/timezone">
+					<xsl:variable name="var7_cur" select="."/>
+					<date xmlns="http://datacite.org/schema/kernel-4">
+						<xsl:attribute name="dateType" namespace="">Collected</xsl:attribute>
+						<xsl:value-of select="concat($par5, $par4, $par7, '/', $par6, $par1, .)"/>
+					</date>
+				</xsl:for-each>
+			</xsl:when>
+			<xsl:otherwise>
+				<date xmlns="http://datacite.org/schema/kernel-4">
+					<xsl:attribute name="dateType" namespace="">Collected</xsl:attribute>
+					<xsl:value-of select="concat($par5, $par4, $par7, '/', $par6, $par1, '')"/>
+				</date>
+			</xsl:otherwise>
+		</xsl:choose>
+	</xsl:template>
 	<xsl:template match="/">
 		<xsl:variable name="var1_initial" select="."/>
 		<resource xmlns="http://datacite.org/schema/kernel-4">
 			<xsl:attribute name="xsi:schemaLocation" namespace="http://www.w3.org/2001/XMLSchema-instance">http://datacite.org/schema/kernel-4 file:///C:/xampp/htdocs/msl-mde/schemas/DataCite/DataCiteSchema45.xsd</xsl:attribute>
 			<xsl:for-each select="*[local-name()='Resource' and namespace-uri()='']">
-				<xsl:variable name="var2_cur" select="."/>
+				<xsl:variable name="var8_cur" select="."/>
 				<identifier>
 					<xsl:attribute name="identifierType" namespace="">DOI</xsl:attribute>
 					<xsl:value-of select="*[local-name()='doi' and namespace-uri()='']"/>
 				</identifier>
 				<creators>
 					<xsl:for-each select="*[local-name()='Authors' and namespace-uri()='']/*[local-name()='Author' and namespace-uri()='']">
-						<xsl:variable name="var3_cur" select="."/>
+						<xsl:variable name="var9_cur" select="."/>
 						<creator>
 							<creatorName>
 								<xsl:attribute name="nameType" namespace="">Personal</xsl:attribute>
@@ -42,7 +80,7 @@ http://www.altova.com/mapforce
 								</nameIdentifier>
 							</xsl:if>
 							<xsl:for-each select="*[local-name()='Affiliations' and namespace-uri()='']/*[local-name()='Affiliation' and namespace-uri()='']">
-								<xsl:variable name="var4_cur" select="."/>
+								<xsl:variable name="var10_cur" select="."/>
 								<affiliation>
 									<xsl:if test="*[local-name()='rorId' and namespace-uri()='']">
 										<xsl:attribute name="affiliationIdentifierScheme" namespace="">ROR</xsl:attribute>
@@ -52,7 +90,7 @@ http://www.altova.com/mapforce
 									</xsl:if>
 									<xsl:if test="*[local-name()='rorId' and namespace-uri()='']">
 										<xsl:for-each select="*[local-name()='rorId' and namespace-uri()='']">
-											<xsl:variable name="var5_cur" select="."/>
+											<xsl:variable name="var11_cur" select="."/>
 											<xsl:attribute name="affiliationIdentifier" namespace="">
 												<xsl:value-of select="concat('https://ror.org/', .)"/>
 											</xsl:attribute>
@@ -66,7 +104,7 @@ http://www.altova.com/mapforce
 				</creators>
 				<titles>
 					<xsl:for-each select="*[local-name()='Titles' and namespace-uri()='']/*[local-name()='Title' and namespace-uri()='']">
-						<xsl:variable name="var6_cur" select="."/>
+						<xsl:variable name="var12_cur" select="."/>
 						<title>
 							<xsl:if test="not(contains(*[local-name()='type' and namespace-uri()=''], 'Main Title'))">
 								<xsl:attribute name="titleType" namespace="">
@@ -91,11 +129,11 @@ http://www.altova.com/mapforce
 					<xsl:attribute name="resourceTypeGeneral" namespace="">
 						<xsl:value-of select="*[local-name()='ResourceType' and namespace-uri()='']/*[local-name()='resource_type_general' and namespace-uri()='']"/>
 					</xsl:attribute>
-					<xsl:value-of select="'Dataset'"/>
+					<xsl:value-of select="*[local-name()='ResourceType' and namespace-uri()='']/*[local-name()='resource_type_general' and namespace-uri()='']"/>
 				</resourceType>
 				<subjects>
 					<xsl:for-each select="*[local-name()='ThesaurusKeywords' and namespace-uri()='']/*[local-name()='Keyword' and namespace-uri()='']">
-						<xsl:variable name="var7_cur" select="."/>
+						<xsl:variable name="var13_cur" select="."/>
 						<subject>
 							<xsl:attribute name="subjectScheme" namespace="">
 								<xsl:value-of select="*[local-name()='scheme' and namespace-uri()='']"/>
@@ -113,156 +151,82 @@ http://www.altova.com/mapforce
 						</subject>
 					</xsl:for-each>
 					<xsl:for-each select="*[local-name()='FreeKeywords' and namespace-uri()='']/*[local-name()='Keyword' and namespace-uri()='']">
-						<xsl:variable name="var8_cur" select="."/>
+						<xsl:variable name="var14_cur" select="."/>
 						<subject>
 							<xsl:value-of select="*[local-name()='free_keyword' and namespace-uri()='']"/>
 						</subject>
 					</xsl:for-each>
 				</subjects>
-				<xsl:for-each select="*[local-name()='Contributors' and namespace-uri()='']">
-					<xsl:variable name="var9_cur" select="."/>
-					<contributors>
-						<xsl:for-each select="$var2_cur/*[local-name()='ContactPersons' and namespace-uri()='']/*[local-name()='ContactPerson' and namespace-uri()='']">
-							<xsl:variable name="var10_cur" select="."/>
+				<contributors>
+					<xsl:for-each select="*[local-name()='ContactPersons' and namespace-uri()='']/*[local-name()='ContactPerson' and namespace-uri()='']">
+						<xsl:variable name="var15_cur" select="."/>
+						<contributor>
+							<xsl:attribute name="contributorType" namespace="">ContactPerson</xsl:attribute>
+							<contributorName>
+								<xsl:value-of select="concat(*[local-name()='familyname' and namespace-uri()=''], ', ', *[local-name()='givenname' and namespace-uri()=''])"/>
+							</contributorName>
+							<givenName>
+								<xsl:value-of select="*[local-name()='givenname' and namespace-uri()='']"/>
+							</givenName>
+							<familyName>
+								<xsl:value-of select="*[local-name()='familyname' and namespace-uri()='']"/>
+							</familyName>
+							<xsl:for-each select="*[local-name()='Affiliations' and namespace-uri()='']/*[local-name()='Affiliation' and namespace-uri()='']">
+								<xsl:variable name="var16_cur" select="."/>
+								<affiliation>
+									<xsl:if test="*[local-name()='rorId' and namespace-uri()='']">
+										<xsl:attribute name="affiliationIdentifierScheme" namespace="">ROR</xsl:attribute>
+									</xsl:if>
+									<xsl:if test="*[local-name()='rorId' and namespace-uri()='']">
+										<xsl:attribute name="schemeURI" namespace="">https://ror.org</xsl:attribute>
+									</xsl:if>
+									<xsl:if test="*[local-name()='rorId' and namespace-uri()='']">
+										<xsl:for-each select="*[local-name()='rorId' and namespace-uri()='']">
+											<xsl:variable name="var17_cur" select="."/>
+											<xsl:attribute name="affiliationIdentifier" namespace="">
+												<xsl:value-of select="concat('https://ror.org/', .)"/>
+											</xsl:attribute>
+										</xsl:for-each>
+									</xsl:if>
+									<xsl:value-of select="*[local-name()='name' and namespace-uri()='']"/>
+								</affiliation>
+							</xsl:for-each>
+						</contributor>
+					</xsl:for-each>
+					<xsl:for-each select="*[local-name()='Contributors' and namespace-uri()='']/*[local-name()='Persons' and namespace-uri()='']/*[local-name()='Person' and namespace-uri()='']">
+						<xsl:variable name="var18_cur" select="."/>
+						<xsl:for-each select="*[local-name()='Roles' and namespace-uri()='']/*[local-name()='Role' and namespace-uri()='']">
+							<xsl:variable name="var19_cur" select="."/>
 							<contributor>
-								<xsl:attribute name="contributorType" namespace="">ContactPerson</xsl:attribute>
+								<xsl:attribute name="contributorType" namespace="">
+									<xsl:choose>
+										<xsl:when test="contains(*[local-name()='name' and namespace-uri()=''], ' ')">
+											<xsl:value-of select="concat(substring-before(*[local-name()='name' and namespace-uri()=''], ' '), substring-after(*[local-name()='name' and namespace-uri()=''], ' '))"/>
+										</xsl:when>
+										<xsl:otherwise>
+											<xsl:value-of select="*[local-name()='name' and namespace-uri()='']"/>
+										</xsl:otherwise>
+									</xsl:choose>
+								</xsl:attribute>
 								<contributorName>
-									<xsl:value-of select="concat(*[local-name()='familyname' and namespace-uri()=''], ', ', *[local-name()='givenname' and namespace-uri()=''])"/>
+									<xsl:attribute name="nameType" namespace="">Personal</xsl:attribute>
+									<xsl:value-of select="concat($var18_cur/*[local-name()='familyname' and namespace-uri()=''], ', ', $var18_cur/*[local-name()='givenname' and namespace-uri()=''])"/>
 								</contributorName>
 								<givenName>
-									<xsl:value-of select="*[local-name()='givenname' and namespace-uri()='']"/>
+									<xsl:value-of select="$var18_cur/*[local-name()='givenname' and namespace-uri()='']"/>
 								</givenName>
 								<familyName>
-									<xsl:value-of select="*[local-name()='familyname' and namespace-uri()='']"/>
+									<xsl:value-of select="$var18_cur/*[local-name()='familyname' and namespace-uri()='']"/>
 								</familyName>
-								<xsl:for-each select="*[local-name()='Affiliations' and namespace-uri()='']/*[local-name()='Affiliation' and namespace-uri()='']">
-									<xsl:variable name="var11_cur" select="."/>
-									<affiliation>
-										<xsl:if test="*[local-name()='rorId' and namespace-uri()='']">
-											<xsl:attribute name="affiliationIdentifierScheme" namespace="">ROR</xsl:attribute>
-										</xsl:if>
-										<xsl:if test="*[local-name()='rorId' and namespace-uri()='']">
-											<xsl:attribute name="schemeURI" namespace="">https://ror.org</xsl:attribute>
-										</xsl:if>
-										<xsl:if test="*[local-name()='rorId' and namespace-uri()='']">
-											<xsl:for-each select="*[local-name()='rorId' and namespace-uri()='']">
-												<xsl:variable name="var12_cur" select="."/>
-												<xsl:attribute name="affiliationIdentifier" namespace="">
-													<xsl:value-of select="concat('https://ror.org/', .)"/>
-												</xsl:attribute>
-											</xsl:for-each>
-										</xsl:if>
-										<xsl:value-of select="*[local-name()='name' and namespace-uri()='']"/>
-									</affiliation>
-								</xsl:for-each>
-							</contributor>
-						</xsl:for-each>
-						<xsl:for-each select="*[local-name()='Persons' and namespace-uri()='']/*[local-name()='Person' and namespace-uri()='']">
-							<xsl:variable name="var13_cur" select="."/>
-							<xsl:for-each select="*[local-name()='Roles' and namespace-uri()='']/*[local-name()='Role' and namespace-uri()='']">
-								<xsl:variable name="var14_cur" select="."/>
-								<contributor>
-									<xsl:attribute name="contributorType" namespace="">
-										<xsl:choose>
-											<xsl:when test="contains(*[local-name()='name' and namespace-uri()=''], ' ')">
-												<xsl:value-of select="concat(substring-before(*[local-name()='name' and namespace-uri()=''], ' '), substring-after(*[local-name()='name' and namespace-uri()=''], ' '))"/>
-											</xsl:when>
-											<xsl:otherwise>
-												<xsl:value-of select="*[local-name()='name' and namespace-uri()='']"/>
-											</xsl:otherwise>
-										</xsl:choose>
-									</xsl:attribute>
-									<contributorName>
-										<xsl:attribute name="nameType" namespace="">Personal</xsl:attribute>
-										<xsl:value-of select="concat($var13_cur/*[local-name()='familyname' and namespace-uri()=''], ', ', $var13_cur/*[local-name()='givenname' and namespace-uri()=''])"/>
-									</contributorName>
-									<givenName>
-										<xsl:value-of select="$var13_cur/*[local-name()='givenname' and namespace-uri()='']"/>
-									</givenName>
-									<familyName>
-										<xsl:value-of select="$var13_cur/*[local-name()='familyname' and namespace-uri()='']"/>
-									</familyName>
-									<xsl:if test="(true() and (string-length(string($var13_cur/*[local-name()='orcid' and namespace-uri()=''])) &gt; 0))">
-										<nameIdentifier>
-											<xsl:attribute name="nameIdentifierScheme" namespace="">ORCID</xsl:attribute>
-											<xsl:attribute name="schemeURI" namespace="">https://orcid.org/</xsl:attribute>
-											<xsl:value-of select="$var13_cur/*[local-name()='orcid' and namespace-uri()='']"/>
-										</nameIdentifier>
-									</xsl:if>
-									<xsl:for-each select="$var13_cur/*[local-name()='Affiliations' and namespace-uri()='']/*[local-name()='Affiliation' and namespace-uri()='']">
-										<xsl:variable name="var15_cur" select="."/>
-										<affiliation>
-											<xsl:if test="*[local-name()='rorId' and namespace-uri()='']">
-												<xsl:attribute name="affiliationIdentifierScheme" namespace="">ROR</xsl:attribute>
-											</xsl:if>
-											<xsl:if test="*[local-name()='rorId' and namespace-uri()='']">
-												<xsl:attribute name="schemeURI" namespace="">https://ror.org</xsl:attribute>
-											</xsl:if>
-											<xsl:for-each select="*[local-name()='rorId' and namespace-uri()='']">
-												<xsl:variable name="var16_cur" select="."/>
-												<xsl:attribute name="affiliationIdentifier" namespace="">
-													<xsl:value-of select="concat('https://ror.org/', .)"/>
-												</xsl:attribute>
-											</xsl:for-each>
-											<xsl:value-of select="*[local-name()='name' and namespace-uri()='']"/>
-										</affiliation>
-									</xsl:for-each>
-								</contributor>
-							</xsl:for-each>
-						</xsl:for-each>
-						<xsl:for-each select="*[local-name()='Institutions' and namespace-uri()='']/*[local-name()='Institution' and namespace-uri()='']">
-							<xsl:variable name="var17_cur" select="."/>
-							<xsl:for-each select="*[local-name()='Roles' and namespace-uri()='']/*[local-name()='Role' and namespace-uri()='']">
-								<xsl:variable name="var18_cur" select="."/>
-								<contributor>
-									<xsl:attribute name="contributorType" namespace="">
-										<xsl:choose>
-											<xsl:when test="contains(*[local-name()='name' and namespace-uri()=''], ' ')">
-												<xsl:value-of select="concat(substring-before(*[local-name()='name' and namespace-uri()=''], ' '), substring-after(*[local-name()='name' and namespace-uri()=''], ' '))"/>
-											</xsl:when>
-											<xsl:otherwise>
-												<xsl:value-of select="*[local-name()='name' and namespace-uri()='']"/>
-											</xsl:otherwise>
-										</xsl:choose>
-									</xsl:attribute>
-									<contributorName>
-										<xsl:attribute name="nameType" namespace="">Organizational</xsl:attribute>
-										<xsl:value-of select="$var17_cur/*[local-name()='name' and namespace-uri()='']"/>
-									</contributorName>
-									<xsl:for-each select="$var17_cur/*[local-name()='Affiliations' and namespace-uri()='']/*[local-name()='Affiliation' and namespace-uri()='']">
-										<xsl:variable name="var19_cur" select="."/>
-										<affiliation>
-											<xsl:if test="*[local-name()='rorId' and namespace-uri()='']">
-												<xsl:attribute name="affiliationIdentifierScheme" namespace="">ROR</xsl:attribute>
-											</xsl:if>
-											<xsl:if test="*[local-name()='rorId' and namespace-uri()='']">
-												<xsl:attribute name="schemeURI" namespace="">https://ror.org</xsl:attribute>
-											</xsl:if>
-											<xsl:for-each select="*[local-name()='rorId' and namespace-uri()='']">
-												<xsl:variable name="var20_cur" select="."/>
-												<xsl:attribute name="affiliationIdentifier" namespace="">
-													<xsl:value-of select="concat('https://ror.org/', .)"/>
-												</xsl:attribute>
-											</xsl:for-each>
-											<xsl:value-of select="*[local-name()='name' and namespace-uri()='']"/>
-										</affiliation>
-									</xsl:for-each>
-								</contributor>
-							</xsl:for-each>
-						</xsl:for-each>
-						<xsl:for-each select="$var2_cur/*[local-name()='OriginatingLaboratories' and namespace-uri()='']/*[local-name()='OriginatingLaboratory' and namespace-uri()='']">
-							<xsl:variable name="var21_cur" select="."/>
-							<contributor>
-								<xsl:attribute name="contributorType" namespace="">HostingInstitution</xsl:attribute>
-								<contributorName>
-									<xsl:value-of select="*[local-name()='laboratoryname' and namespace-uri()='']"/>
-								</contributorName>
-								<nameIdentifier>
-									<xsl:attribute name="nameIdentifierScheme" namespace="">labid</xsl:attribute>
-									<xsl:value-of select="*[local-name()='labId' and namespace-uri()='']"/>
-								</nameIdentifier>
-								<xsl:for-each select="*[local-name()='Affiliations' and namespace-uri()='']/*[local-name()='Affiliation' and namespace-uri()='']">
-									<xsl:variable name="var22_cur" select="."/>
+								<xsl:if test="(true() and (string-length(string($var18_cur/*[local-name()='orcid' and namespace-uri()=''])) &gt; 0))">
+									<nameIdentifier>
+										<xsl:attribute name="nameIdentifierScheme" namespace="">ORCID</xsl:attribute>
+										<xsl:attribute name="schemeURI" namespace="">https://orcid.org/</xsl:attribute>
+										<xsl:value-of select="$var18_cur/*[local-name()='orcid' and namespace-uri()='']"/>
+									</nameIdentifier>
+								</xsl:if>
+								<xsl:for-each select="$var18_cur/*[local-name()='Affiliations' and namespace-uri()='']/*[local-name()='Affiliation' and namespace-uri()='']">
+									<xsl:variable name="var20_cur" select="."/>
 									<affiliation>
 										<xsl:if test="*[local-name()='rorId' and namespace-uri()='']">
 											<xsl:attribute name="affiliationIdentifierScheme" namespace="">ROR</xsl:attribute>
@@ -271,7 +235,7 @@ http://www.altova.com/mapforce
 											<xsl:attribute name="schemeURI" namespace="">https://ror.org</xsl:attribute>
 										</xsl:if>
 										<xsl:for-each select="*[local-name()='rorId' and namespace-uri()='']">
-											<xsl:variable name="var23_cur" select="."/>
+											<xsl:variable name="var21_cur" select="."/>
 											<xsl:attribute name="affiliationIdentifier" namespace="">
 												<xsl:value-of select="concat('https://ror.org/', .)"/>
 											</xsl:attribute>
@@ -281,207 +245,309 @@ http://www.altova.com/mapforce
 								</xsl:for-each>
 							</contributor>
 						</xsl:for-each>
-					</contributors>
-				</xsl:for-each>
+					</xsl:for-each>
+					<xsl:for-each select="*[local-name()='Contributors' and namespace-uri()='']/*[local-name()='Institutions' and namespace-uri()='']/*[local-name()='Institution' and namespace-uri()='']">
+						<xsl:variable name="var22_cur" select="."/>
+						<xsl:for-each select="*[local-name()='Roles' and namespace-uri()='']/*[local-name()='Role' and namespace-uri()='']">
+							<xsl:variable name="var23_cur" select="."/>
+							<contributor>
+								<xsl:attribute name="contributorType" namespace="">
+									<xsl:choose>
+										<xsl:when test="contains(*[local-name()='name' and namespace-uri()=''], ' ')">
+											<xsl:value-of select="concat(substring-before(*[local-name()='name' and namespace-uri()=''], ' '), substring-after(*[local-name()='name' and namespace-uri()=''], ' '))"/>
+										</xsl:when>
+										<xsl:otherwise>
+											<xsl:value-of select="*[local-name()='name' and namespace-uri()='']"/>
+										</xsl:otherwise>
+									</xsl:choose>
+								</xsl:attribute>
+								<contributorName>
+									<xsl:attribute name="nameType" namespace="">Organizational</xsl:attribute>
+									<xsl:value-of select="$var22_cur/*[local-name()='name' and namespace-uri()='']"/>
+								</contributorName>
+								<xsl:for-each select="$var22_cur/*[local-name()='Affiliations' and namespace-uri()='']/*[local-name()='Affiliation' and namespace-uri()='']">
+									<xsl:variable name="var24_cur" select="."/>
+									<affiliation>
+										<xsl:if test="*[local-name()='rorId' and namespace-uri()='']">
+											<xsl:attribute name="affiliationIdentifierScheme" namespace="">ROR</xsl:attribute>
+										</xsl:if>
+										<xsl:if test="*[local-name()='rorId' and namespace-uri()='']">
+											<xsl:attribute name="schemeURI" namespace="">https://ror.org</xsl:attribute>
+										</xsl:if>
+										<xsl:for-each select="*[local-name()='rorId' and namespace-uri()='']">
+											<xsl:variable name="var25_cur" select="."/>
+											<xsl:attribute name="affiliationIdentifier" namespace="">
+												<xsl:value-of select="concat('https://ror.org/', .)"/>
+											</xsl:attribute>
+										</xsl:for-each>
+										<xsl:value-of select="*[local-name()='name' and namespace-uri()='']"/>
+									</affiliation>
+								</xsl:for-each>
+							</contributor>
+						</xsl:for-each>
+					</xsl:for-each>
+					<xsl:for-each select="*[local-name()='OriginatingLaboratories' and namespace-uri()='']/*[local-name()='OriginatingLaboratory' and namespace-uri()='']">
+						<xsl:variable name="var26_cur" select="."/>
+						<contributor>
+							<xsl:attribute name="contributorType" namespace="">HostingInstitution</xsl:attribute>
+							<contributorName>
+								<xsl:value-of select="*[local-name()='laboratoryname' and namespace-uri()='']"/>
+							</contributorName>
+							<nameIdentifier>
+								<xsl:attribute name="nameIdentifierScheme" namespace="">labid</xsl:attribute>
+								<xsl:value-of select="*[local-name()='labId' and namespace-uri()='']"/>
+							</nameIdentifier>
+							<xsl:for-each select="*[local-name()='Affiliations' and namespace-uri()='']/*[local-name()='Affiliation' and namespace-uri()='']">
+								<xsl:variable name="var27_cur" select="."/>
+								<affiliation>
+									<xsl:if test="*[local-name()='rorId' and namespace-uri()='']">
+										<xsl:attribute name="affiliationIdentifierScheme" namespace="">ROR</xsl:attribute>
+									</xsl:if>
+									<xsl:if test="*[local-name()='rorId' and namespace-uri()='']">
+										<xsl:attribute name="schemeURI" namespace="">https://ror.org</xsl:attribute>
+									</xsl:if>
+									<xsl:for-each select="*[local-name()='rorId' and namespace-uri()='']">
+										<xsl:variable name="var28_cur" select="."/>
+										<xsl:attribute name="affiliationIdentifier" namespace="">
+											<xsl:value-of select="concat('https://ror.org/', .)"/>
+										</xsl:attribute>
+									</xsl:for-each>
+									<xsl:value-of select="*[local-name()='name' and namespace-uri()='']"/>
+								</affiliation>
+							</xsl:for-each>
+						</contributor>
+					</xsl:for-each>
+				</contributors>
 				<dates>
 					<xsl:for-each select="*[local-name()='dateEmbargoUntil' and namespace-uri()='']">
-						<xsl:variable name="var24_cur" select="."/>
+						<xsl:variable name="var29_cur" select="."/>
 						<date>
 							<xsl:attribute name="dateType" namespace="">Available</xsl:attribute>
 							<xsl:value-of select="."/>
 						</date>
 					</xsl:for-each>
 					<xsl:for-each select="*[local-name()='SpatialTemporalCoverages' and namespace-uri()='']/*[local-name()='SpatialTemporalCoverage' and namespace-uri()='']">
-						<xsl:variable name="var25_cur" select="."/>
-						<xsl:variable name="var26_nested">
-							<xsl:for-each select="$var2_cur/*[local-name()='SpatialTemporalCoverages' and namespace-uri()='']/*[local-name()='SpatialTemporalCoverage' and namespace-uri()='']">
-								<xsl:variable name="var27_cur" select="."/>
-								<xsl:value-of select="number(boolean(*[local-name()='timeStart' and namespace-uri()='']))"/>
-							</xsl:for-each>
-						</xsl:variable>
-						<xsl:choose>
-							<xsl:when test="boolean(translate(normalize-space($var26_nested), ' 0', ''))">
-								<xsl:for-each select="*[local-name()='timeStart' and namespace-uri()='']">
-									<xsl:variable name="var28_cur" select="."/>
-									<xsl:variable name="var29_nested">
-										<xsl:for-each select="$var2_cur/*[local-name()='SpatialTemporalCoverages' and namespace-uri()='']/*[local-name()='SpatialTemporalCoverage' and namespace-uri()='']">
-											<xsl:variable name="var30_cur" select="."/>
-											<xsl:value-of select="number(boolean(*[local-name()='timeEnd' and namespace-uri()='']))"/>
-										</xsl:for-each>
-									</xsl:variable>
-									<xsl:choose>
-										<xsl:when test="boolean(translate(normalize-space($var29_nested), ' 0', ''))">
-											<xsl:for-each select="$var25_cur/*[local-name()='timeEnd' and namespace-uri()='']">
-												<xsl:variable name="var31_cur" select="."/>
-												<date>
-													<xsl:attribute name="dateType" namespace="">Collected</xsl:attribute>
-													<xsl:variable name="var32_nested">
-														<xsl:for-each select="$var2_cur/*[local-name()='SpatialTemporalCoverages' and namespace-uri()='']/*[local-name()='SpatialTemporalCoverage' and namespace-uri()='']">
-															<xsl:variable name="var33_cur" select="."/>
-															<xsl:value-of select="number(boolean(*[local-name()='timeStart' and namespace-uri()='']))"/>
-														</xsl:for-each>
-													</xsl:variable>
-													<xsl:variable name="var34_nested">
-														<xsl:for-each select="$var2_cur/*[local-name()='SpatialTemporalCoverages' and namespace-uri()='']/*[local-name()='SpatialTemporalCoverage' and namespace-uri()='']">
-															<xsl:variable name="var35_cur" select="."/>
+						<xsl:variable name="var30_cur" select="."/>
+						<xsl:for-each select="*[local-name()='dateStart' and namespace-uri()='']">
+							<xsl:variable name="var31_cur" select="."/>
+							<xsl:variable name="var32_nested">
+								<xsl:for-each select="$var8_cur/*[local-name()='SpatialTemporalCoverages' and namespace-uri()='']/*[local-name()='SpatialTemporalCoverage' and namespace-uri()='']">
+									<xsl:variable name="var33_cur" select="."/>
+									<xsl:value-of select="number(boolean(*[local-name()='timeStart' and namespace-uri()='']))"/>
+								</xsl:for-each>
+							</xsl:variable>
+							<xsl:choose>
+								<xsl:when test="boolean(translate(normalize-space($var32_nested), ' 0', ''))">
+									<xsl:for-each select="$var30_cur/*[local-name()='timeStart' and namespace-uri()='']">
+										<xsl:variable name="var34_cur" select="."/>
+										<xsl:variable name="var35_nested">
+											<xsl:for-each select="$var8_cur/*[local-name()='SpatialTemporalCoverages' and namespace-uri()='']/*[local-name()='SpatialTemporalCoverage' and namespace-uri()='']">
+												<xsl:variable name="var36_cur" select="."/>
+												<xsl:value-of select="number(boolean(*[local-name()='timezone' and namespace-uri()='']))"/>
+											</xsl:for-each>
+										</xsl:variable>
+										<xsl:variable name="var37_nested">
+											<xsl:for-each select="$var8_cur/*[local-name()='SpatialTemporalCoverages' and namespace-uri()='']/*[local-name()='SpatialTemporalCoverage' and namespace-uri()='']">
+												<xsl:variable name="var38_cur" select="."/>
+												<xsl:value-of select="number(boolean(*[local-name()='timeStart' and namespace-uri()='']))"/>
+											</xsl:for-each>
+										</xsl:variable>
+										<xsl:choose>
+											<xsl:when test="(boolean(translate(normalize-space($var35_nested), ' 0', '')) and boolean(translate(normalize-space($var37_nested), ' 0', '')))">
+												<xsl:for-each select="$var30_cur/*[local-name()='timezone' and namespace-uri()='']">
+													<xsl:variable name="var39_cur" select="."/>
+													<xsl:for-each select="$var30_cur/*[local-name()='dateEnd' and namespace-uri()='']">
+														<xsl:variable name="var40_cur" select="."/>
+														<xsl:variable name="var41_nested">
+															<xsl:for-each select="$var8_cur/*[local-name()='SpatialTemporalCoverages' and namespace-uri()='']/*[local-name()='SpatialTemporalCoverage' and namespace-uri()='']">
+																<xsl:variable name="var42_cur" select="."/>
+																<xsl:value-of select="number(boolean(*[local-name()='timeEnd' and namespace-uri()='']))"/>
+															</xsl:for-each>
+														</xsl:variable>
+														<xsl:choose>
+															<xsl:when test="boolean(translate(normalize-space($var41_nested), ' 0', ''))">
+																<xsl:for-each select="$var30_cur/*[local-name()='timeEnd' and namespace-uri()='']">
+																	<xsl:variable name="var43_cur" select="."/>
+																	<xsl:call-template name="agt:MapToDataCiteSchema45_var2">
+																		<xsl:with-param name="par1" select="concat('T', .)"/>
+																		<xsl:with-param name="par2" select="$var8_cur"/>
+																		<xsl:with-param name="par3" select="$var30_cur"/>
+																		<xsl:with-param name="par4" select="concat('T', $var34_cur)"/>
+																		<xsl:with-param name="par5" select="$var31_cur"/>
+																		<xsl:with-param name="par6" select="$var40_cur"/>
+																		<xsl:with-param name="par7" select="string($var39_cur)"/>
+																	</xsl:call-template>
+																</xsl:for-each>
+															</xsl:when>
+															<xsl:otherwise>
+																<xsl:call-template name="agt:MapToDataCiteSchema45_var2">
+																	<xsl:with-param name="par1" select="''"/>
+																	<xsl:with-param name="par2" select="$var8_cur"/>
+																	<xsl:with-param name="par3" select="$var30_cur"/>
+																	<xsl:with-param name="par4" select="concat('T', $var34_cur)"/>
+																	<xsl:with-param name="par5" select="$var31_cur"/>
+																	<xsl:with-param name="par6" select="."/>
+																	<xsl:with-param name="par7" select="string($var39_cur)"/>
+																</xsl:call-template>
+															</xsl:otherwise>
+														</xsl:choose>
+													</xsl:for-each>
+												</xsl:for-each>
+											</xsl:when>
+											<xsl:otherwise>
+												<xsl:for-each select="$var30_cur/*[local-name()='dateEnd' and namespace-uri()='']">
+													<xsl:variable name="var44_cur" select="."/>
+													<xsl:variable name="var45_nested">
+														<xsl:for-each select="$var8_cur/*[local-name()='SpatialTemporalCoverages' and namespace-uri()='']/*[local-name()='SpatialTemporalCoverage' and namespace-uri()='']">
+															<xsl:variable name="var46_cur" select="."/>
 															<xsl:value-of select="number(boolean(*[local-name()='timeEnd' and namespace-uri()='']))"/>
 														</xsl:for-each>
 													</xsl:variable>
-													<xsl:variable name="var36_nested">
-														<xsl:choose>
-															<xsl:when test="(true() and boolean(translate(normalize-space($var32_nested), ' 0', '')))">
-																<xsl:value-of select="$var25_cur/*[local-name()='timezone' and namespace-uri()='']"/>
-															</xsl:when>
-															<xsl:otherwise>
-																<xsl:value-of select="''"/>
-															</xsl:otherwise>
-														</xsl:choose>
+													<xsl:choose>
+														<xsl:when test="boolean(translate(normalize-space($var45_nested), ' 0', ''))">
+															<xsl:for-each select="$var30_cur/*[local-name()='timeEnd' and namespace-uri()='']">
+																<xsl:variable name="var47_cur" select="."/>
+																<xsl:call-template name="agt:MapToDataCiteSchema45_var2">
+																	<xsl:with-param name="par1" select="concat('T', .)"/>
+																	<xsl:with-param name="par2" select="$var8_cur"/>
+																	<xsl:with-param name="par3" select="$var30_cur"/>
+																	<xsl:with-param name="par4" select="concat('T', $var34_cur)"/>
+																	<xsl:with-param name="par5" select="$var31_cur"/>
+																	<xsl:with-param name="par6" select="$var44_cur"/>
+																	<xsl:with-param name="par7" select="''"/>
+																</xsl:call-template>
+															</xsl:for-each>
+														</xsl:when>
+														<xsl:otherwise>
+															<xsl:call-template name="agt:MapToDataCiteSchema45_var2">
+																<xsl:with-param name="par1" select="''"/>
+																<xsl:with-param name="par2" select="$var8_cur"/>
+																<xsl:with-param name="par3" select="$var30_cur"/>
+																<xsl:with-param name="par4" select="concat('T', $var34_cur)"/>
+																<xsl:with-param name="par5" select="$var31_cur"/>
+																<xsl:with-param name="par6" select="."/>
+																<xsl:with-param name="par7" select="''"/>
+															</xsl:call-template>
+														</xsl:otherwise>
+													</xsl:choose>
+												</xsl:for-each>
+											</xsl:otherwise>
+										</xsl:choose>
+									</xsl:for-each>
+								</xsl:when>
+								<xsl:otherwise>
+									<xsl:variable name="var48_nested">
+										<xsl:for-each select="$var8_cur/*[local-name()='SpatialTemporalCoverages' and namespace-uri()='']/*[local-name()='SpatialTemporalCoverage' and namespace-uri()='']">
+											<xsl:variable name="var49_cur" select="."/>
+											<xsl:value-of select="number(boolean(*[local-name()='timezone' and namespace-uri()='']))"/>
+										</xsl:for-each>
+									</xsl:variable>
+									<xsl:variable name="var50_nested">
+										<xsl:for-each select="$var8_cur/*[local-name()='SpatialTemporalCoverages' and namespace-uri()='']/*[local-name()='SpatialTemporalCoverage' and namespace-uri()='']">
+											<xsl:variable name="var51_cur" select="."/>
+											<xsl:value-of select="number(boolean(*[local-name()='timeStart' and namespace-uri()='']))"/>
+										</xsl:for-each>
+									</xsl:variable>
+									<xsl:choose>
+										<xsl:when test="(boolean(translate(normalize-space($var48_nested), ' 0', '')) and boolean(translate(normalize-space($var50_nested), ' 0', '')))">
+											<xsl:for-each select="$var30_cur/*[local-name()='timezone' and namespace-uri()='']">
+												<xsl:variable name="var52_cur" select="."/>
+												<xsl:for-each select="$var30_cur/*[local-name()='dateEnd' and namespace-uri()='']">
+													<xsl:variable name="var53_cur" select="."/>
+													<xsl:variable name="var54_nested">
+														<xsl:for-each select="$var8_cur/*[local-name()='SpatialTemporalCoverages' and namespace-uri()='']/*[local-name()='SpatialTemporalCoverage' and namespace-uri()='']">
+															<xsl:variable name="var55_cur" select="."/>
+															<xsl:value-of select="number(boolean(*[local-name()='timeEnd' and namespace-uri()='']))"/>
+														</xsl:for-each>
 													</xsl:variable>
-													<xsl:variable name="var37_nested">
-														<xsl:choose>
-															<xsl:when test="(true() and boolean(translate(normalize-space($var34_nested), ' 0', '')))">
-																<xsl:value-of select="$var25_cur/*[local-name()='timezone' and namespace-uri()='']"/>
-															</xsl:when>
-															<xsl:otherwise>
-																<xsl:value-of select="''"/>
-															</xsl:otherwise>
-														</xsl:choose>
-													</xsl:variable>
-													<xsl:value-of select="concat($var25_cur/*[local-name()='dateStart' and namespace-uri()=''], concat('T', $var28_cur), $var36_nested, '/', $var25_cur/*[local-name()='dateEnd' and namespace-uri()=''], concat('T', .), $var37_nested)"/>
-												</date>
+													<xsl:choose>
+														<xsl:when test="boolean(translate(normalize-space($var54_nested), ' 0', ''))">
+															<xsl:for-each select="$var30_cur/*[local-name()='timeEnd' and namespace-uri()='']">
+																<xsl:variable name="var56_cur" select="."/>
+																<xsl:call-template name="agt:MapToDataCiteSchema45_var2">
+																	<xsl:with-param name="par1" select="concat('T', .)"/>
+																	<xsl:with-param name="par2" select="$var8_cur"/>
+																	<xsl:with-param name="par3" select="$var30_cur"/>
+																	<xsl:with-param name="par4" select="''"/>
+																	<xsl:with-param name="par5" select="$var31_cur"/>
+																	<xsl:with-param name="par6" select="$var53_cur"/>
+																	<xsl:with-param name="par7" select="string($var52_cur)"/>
+																</xsl:call-template>
+															</xsl:for-each>
+														</xsl:when>
+														<xsl:otherwise>
+															<xsl:call-template name="agt:MapToDataCiteSchema45_var2">
+																<xsl:with-param name="par1" select="''"/>
+																<xsl:with-param name="par2" select="$var8_cur"/>
+																<xsl:with-param name="par3" select="$var30_cur"/>
+																<xsl:with-param name="par4" select="''"/>
+																<xsl:with-param name="par5" select="$var31_cur"/>
+																<xsl:with-param name="par6" select="."/>
+																<xsl:with-param name="par7" select="string($var52_cur)"/>
+															</xsl:call-template>
+														</xsl:otherwise>
+													</xsl:choose>
+												</xsl:for-each>
 											</xsl:for-each>
 										</xsl:when>
 										<xsl:otherwise>
-											<date>
-												<xsl:attribute name="dateType" namespace="">Collected</xsl:attribute>
-												<xsl:variable name="var38_nested">
-													<xsl:for-each select="$var2_cur/*[local-name()='SpatialTemporalCoverages' and namespace-uri()='']/*[local-name()='SpatialTemporalCoverage' and namespace-uri()='']">
-														<xsl:variable name="var39_cur" select="."/>
-														<xsl:value-of select="number(boolean(*[local-name()='timeStart' and namespace-uri()='']))"/>
-													</xsl:for-each>
-												</xsl:variable>
-												<xsl:variable name="var40_nested">
-													<xsl:for-each select="$var2_cur/*[local-name()='SpatialTemporalCoverages' and namespace-uri()='']/*[local-name()='SpatialTemporalCoverage' and namespace-uri()='']">
-														<xsl:variable name="var41_cur" select="."/>
+											<xsl:for-each select="$var30_cur/*[local-name()='dateEnd' and namespace-uri()='']">
+												<xsl:variable name="var57_cur" select="."/>
+												<xsl:variable name="var58_nested">
+													<xsl:for-each select="$var8_cur/*[local-name()='SpatialTemporalCoverages' and namespace-uri()='']/*[local-name()='SpatialTemporalCoverage' and namespace-uri()='']">
+														<xsl:variable name="var59_cur" select="."/>
 														<xsl:value-of select="number(boolean(*[local-name()='timeEnd' and namespace-uri()='']))"/>
 													</xsl:for-each>
 												</xsl:variable>
-												<xsl:variable name="var42_nested">
-													<xsl:choose>
-														<xsl:when test="(true() and boolean(translate(normalize-space($var38_nested), ' 0', '')))">
-															<xsl:value-of select="$var25_cur/*[local-name()='timezone' and namespace-uri()='']"/>
-														</xsl:when>
-														<xsl:otherwise>
-															<xsl:value-of select="''"/>
-														</xsl:otherwise>
-													</xsl:choose>
-												</xsl:variable>
-												<xsl:variable name="var43_nested">
-													<xsl:choose>
-														<xsl:when test="(true() and boolean(translate(normalize-space($var40_nested), ' 0', '')))">
-															<xsl:value-of select="$var25_cur/*[local-name()='timezone' and namespace-uri()='']"/>
-														</xsl:when>
-														<xsl:otherwise>
-															<xsl:value-of select="''"/>
-														</xsl:otherwise>
-													</xsl:choose>
-												</xsl:variable>
-												<xsl:value-of select="concat($var25_cur/*[local-name()='dateStart' and namespace-uri()=''], concat('T', .), $var42_nested, '/', $var25_cur/*[local-name()='dateEnd' and namespace-uri()=''], '', $var43_nested)"/>
-											</date>
+												<xsl:choose>
+													<xsl:when test="boolean(translate(normalize-space($var58_nested), ' 0', ''))">
+														<xsl:for-each select="$var30_cur/*[local-name()='timeEnd' and namespace-uri()='']">
+															<xsl:variable name="var60_cur" select="."/>
+															<xsl:call-template name="agt:MapToDataCiteSchema45_var2">
+																<xsl:with-param name="par1" select="concat('T', .)"/>
+																<xsl:with-param name="par2" select="$var8_cur"/>
+																<xsl:with-param name="par3" select="$var30_cur"/>
+																<xsl:with-param name="par4" select="''"/>
+																<xsl:with-param name="par5" select="$var31_cur"/>
+																<xsl:with-param name="par6" select="$var57_cur"/>
+																<xsl:with-param name="par7" select="''"/>
+															</xsl:call-template>
+														</xsl:for-each>
+													</xsl:when>
+													<xsl:otherwise>
+														<xsl:call-template name="agt:MapToDataCiteSchema45_var2">
+															<xsl:with-param name="par1" select="''"/>
+															<xsl:with-param name="par2" select="$var8_cur"/>
+															<xsl:with-param name="par3" select="$var30_cur"/>
+															<xsl:with-param name="par4" select="''"/>
+															<xsl:with-param name="par5" select="$var31_cur"/>
+															<xsl:with-param name="par6" select="."/>
+															<xsl:with-param name="par7" select="''"/>
+														</xsl:call-template>
+													</xsl:otherwise>
+												</xsl:choose>
+											</xsl:for-each>
 										</xsl:otherwise>
 									</xsl:choose>
+								</xsl:otherwise>
+							</xsl:choose>
+						</xsl:for-each>
+					</xsl:for-each>
+					<xsl:for-each select="*[local-name()='SpatialTemporalCoverages' and namespace-uri()='']/*[local-name()='SpatialTemporalCoverage' and namespace-uri()='']">
+						<xsl:variable name="var61_cur" select="."/>
+						<xsl:for-each select="(./*[local-name()='dateStart' and namespace-uri()=''])[not($var61_cur/*[local-name()='timeStart' and namespace-uri()=''])]">
+							<xsl:variable name="var62_filter" select="."/>
+							<xsl:for-each select="$var61_cur/*[local-name()='timezone' and namespace-uri()='']">
+								<xsl:variable name="var63_cur" select="."/>
+								<xsl:for-each select="($var61_cur/*[local-name()='dateEnd' and namespace-uri()=''])[not($var61_cur/*[local-name()='timeEnd' and namespace-uri()=''])]">
+									<xsl:variable name="var64_filter" select="."/>
+									<date>
+										<xsl:attribute name="dateType" namespace="">Collected</xsl:attribute>
+										<xsl:value-of select="concat($var62_filter, $var63_cur, '/', ., $var63_cur)"/>
+									</date>
 								</xsl:for-each>
-							</xsl:when>
-							<xsl:otherwise>
-								<xsl:variable name="var44_nested">
-									<xsl:for-each select="$var2_cur/*[local-name()='SpatialTemporalCoverages' and namespace-uri()='']/*[local-name()='SpatialTemporalCoverage' and namespace-uri()='']">
-										<xsl:variable name="var45_cur" select="."/>
-										<xsl:value-of select="number(boolean(*[local-name()='timeEnd' and namespace-uri()='']))"/>
-									</xsl:for-each>
-								</xsl:variable>
-								<xsl:choose>
-									<xsl:when test="boolean(translate(normalize-space($var44_nested), ' 0', ''))">
-										<xsl:for-each select="*[local-name()='timeEnd' and namespace-uri()='']">
-											<xsl:variable name="var46_cur" select="."/>
-											<date>
-												<xsl:attribute name="dateType" namespace="">Collected</xsl:attribute>
-												<xsl:variable name="var47_nested">
-													<xsl:for-each select="$var2_cur/*[local-name()='SpatialTemporalCoverages' and namespace-uri()='']/*[local-name()='SpatialTemporalCoverage' and namespace-uri()='']">
-														<xsl:variable name="var48_cur" select="."/>
-														<xsl:value-of select="number(boolean(*[local-name()='timeStart' and namespace-uri()='']))"/>
-													</xsl:for-each>
-												</xsl:variable>
-												<xsl:variable name="var49_nested">
-													<xsl:for-each select="$var2_cur/*[local-name()='SpatialTemporalCoverages' and namespace-uri()='']/*[local-name()='SpatialTemporalCoverage' and namespace-uri()='']">
-														<xsl:variable name="var50_cur" select="."/>
-														<xsl:value-of select="number(boolean(*[local-name()='timeEnd' and namespace-uri()='']))"/>
-													</xsl:for-each>
-												</xsl:variable>
-												<xsl:variable name="var51_nested">
-													<xsl:choose>
-														<xsl:when test="(true() and boolean(translate(normalize-space($var47_nested), ' 0', '')))">
-															<xsl:value-of select="$var25_cur/*[local-name()='timezone' and namespace-uri()='']"/>
-														</xsl:when>
-														<xsl:otherwise>
-															<xsl:value-of select="''"/>
-														</xsl:otherwise>
-													</xsl:choose>
-												</xsl:variable>
-												<xsl:variable name="var52_nested">
-													<xsl:choose>
-														<xsl:when test="(true() and boolean(translate(normalize-space($var49_nested), ' 0', '')))">
-															<xsl:value-of select="$var25_cur/*[local-name()='timezone' and namespace-uri()='']"/>
-														</xsl:when>
-														<xsl:otherwise>
-															<xsl:value-of select="''"/>
-														</xsl:otherwise>
-													</xsl:choose>
-												</xsl:variable>
-												<xsl:value-of select="concat($var25_cur/*[local-name()='dateStart' and namespace-uri()=''], '', $var51_nested, '/', $var25_cur/*[local-name()='dateEnd' and namespace-uri()=''], concat('T', .), $var52_nested)"/>
-											</date>
-										</xsl:for-each>
-									</xsl:when>
-									<xsl:otherwise>
-										<date>
-											<xsl:attribute name="dateType" namespace="">Collected</xsl:attribute>
-											<xsl:variable name="var53_nested">
-												<xsl:for-each select="$var2_cur/*[local-name()='SpatialTemporalCoverages' and namespace-uri()='']/*[local-name()='SpatialTemporalCoverage' and namespace-uri()='']">
-													<xsl:variable name="var54_cur" select="."/>
-													<xsl:value-of select="number(boolean(*[local-name()='timeStart' and namespace-uri()='']))"/>
-												</xsl:for-each>
-											</xsl:variable>
-											<xsl:variable name="var55_nested">
-												<xsl:for-each select="$var2_cur/*[local-name()='SpatialTemporalCoverages' and namespace-uri()='']/*[local-name()='SpatialTemporalCoverage' and namespace-uri()='']">
-													<xsl:variable name="var56_cur" select="."/>
-													<xsl:value-of select="number(boolean(*[local-name()='timeEnd' and namespace-uri()='']))"/>
-												</xsl:for-each>
-											</xsl:variable>
-											<xsl:variable name="var57_nested">
-												<xsl:choose>
-													<xsl:when test="(true() and boolean(translate(normalize-space($var53_nested), ' 0', '')))">
-														<xsl:value-of select="*[local-name()='timezone' and namespace-uri()='']"/>
-													</xsl:when>
-													<xsl:otherwise>
-														<xsl:value-of select="''"/>
-													</xsl:otherwise>
-												</xsl:choose>
-											</xsl:variable>
-											<xsl:variable name="var58_nested">
-												<xsl:choose>
-													<xsl:when test="(true() and boolean(translate(normalize-space($var55_nested), ' 0', '')))">
-														<xsl:value-of select="*[local-name()='timezone' and namespace-uri()='']"/>
-													</xsl:when>
-													<xsl:otherwise>
-														<xsl:value-of select="''"/>
-													</xsl:otherwise>
-												</xsl:choose>
-											</xsl:variable>
-											<xsl:value-of select="concat(*[local-name()='dateStart' and namespace-uri()=''], '', $var57_nested, '/', *[local-name()='dateEnd' and namespace-uri()=''], '', $var58_nested)"/>
-										</date>
-									</xsl:otherwise>
-								</xsl:choose>
-							</xsl:otherwise>
-						</xsl:choose>
+							</xsl:for-each>
+						</xsl:for-each>
 					</xsl:for-each>
 					<date>
 						<xsl:attribute name="dateType" namespace="">Created</xsl:attribute>
@@ -492,10 +558,10 @@ http://www.altova.com/mapforce
 					<xsl:value-of select="*[local-name()='Language' and namespace-uri()='']/*[local-name()='code' and namespace-uri()='']"/>
 				</language>
 				<xsl:for-each select="*[local-name()='RelatedWorks' and namespace-uri()='']">
-					<xsl:variable name="var59_cur" select="."/>
+					<xsl:variable name="var65_cur" select="."/>
 					<relatedIdentifiers>
 						<xsl:for-each select="*[local-name()='RelatedWork' and namespace-uri()='']">
-							<xsl:variable name="var60_cur" select="."/>
+							<xsl:variable name="var66_cur" select="."/>
 							<relatedIdentifier>
 								<xsl:attribute name="relatedIdentifierType" namespace="">
 									<xsl:value-of select="*[local-name()='IdentifierType' and namespace-uri()='']/*[local-name()='name' and namespace-uri()='']"/>
@@ -510,7 +576,7 @@ http://www.altova.com/mapforce
 				</xsl:for-each>
 				<xsl:if test="*[local-name()='version' and namespace-uri()='']">
 					<xsl:for-each select="*[local-name()='version' and namespace-uri()='']">
-						<xsl:variable name="var61_cur" select="."/>
+						<xsl:variable name="var67_cur" select="."/>
 						<version>
 							<xsl:value-of select="."/>
 						</version>
@@ -532,7 +598,7 @@ http://www.altova.com/mapforce
 				</rightsList>
 				<descriptions>
 					<xsl:for-each select="*[local-name()='Descriptions' and namespace-uri()='']/*[local-name()='Description' and namespace-uri()='']">
-						<xsl:variable name="var62_cur" select="."/>
+						<xsl:variable name="var68_cur" select="."/>
 						<description>
 							<xsl:attribute name="descriptionType" namespace="">
 								<xsl:choose>
@@ -551,46 +617,61 @@ http://www.altova.com/mapforce
 				</descriptions>
 				<geoLocations>
 					<xsl:for-each select="*[local-name()='SpatialTemporalCoverages' and namespace-uri()='']/*[local-name()='SpatialTemporalCoverage' and namespace-uri()='']">
-						<xsl:variable name="var63_cur" select="."/>
+						<xsl:variable name="var69_cur" select="."/>
 						<geoLocation>
-							<geoLocationPlace>
-								<xsl:value-of select="*[local-name()='description' and namespace-uri()='']"/>
-							</geoLocationPlace>
+							<xsl:for-each select="*[local-name()='description' and namespace-uri()='']">
+								<xsl:variable name="var70_cur" select="."/>
+								<geoLocationPlace>
+									<xsl:value-of select="."/>
+								</geoLocationPlace>
+							</xsl:for-each>
 							<xsl:if test="not(*[local-name()='latitudeMax' and namespace-uri()=''])">
 								<geoLocationPoint>
 									<xsl:if test="not((false() and boolean(*[local-name()='longitudeMax' and namespace-uri()=''])))">
-										<pointLongitude>
-											<xsl:value-of select="number(*[local-name()='longitudeMin' and namespace-uri()=''])"/>
-										</pointLongitude>
-										<pointLatitude>
-											<xsl:value-of select="number(*[local-name()='latitudeMin' and namespace-uri()=''])"/>
-										</pointLatitude>
+										<xsl:for-each select="*[local-name()='longitudeMin' and namespace-uri()='']">
+											<xsl:variable name="var71_cur" select="."/>
+											<pointLongitude>
+												<xsl:value-of select="number(.)"/>
+											</pointLongitude>
+										</xsl:for-each>
+										<xsl:for-each select="*[local-name()='latitudeMin' and namespace-uri()='']">
+											<xsl:variable name="var72_cur" select="."/>
+											<pointLatitude>
+												<xsl:value-of select="number(.)"/>
+											</pointLatitude>
+										</xsl:for-each>
 									</xsl:if>
 								</geoLocationPoint>
 							</xsl:if>
 							<xsl:if test="*[local-name()='latitudeMax' and namespace-uri()='']">
 								<geoLocationBox>
 									<xsl:if test="(true() and boolean(*[local-name()='longitudeMax' and namespace-uri()='']))">
-										<westBoundLongitude>
-											<xsl:value-of select="number(*[local-name()='longitudeMin' and namespace-uri()=''])"/>
-										</westBoundLongitude>
+										<xsl:for-each select="*[local-name()='longitudeMin' and namespace-uri()='']">
+											<xsl:variable name="var73_cur" select="."/>
+											<westBoundLongitude>
+												<xsl:value-of select="number(.)"/>
+											</westBoundLongitude>
+										</xsl:for-each>
 									</xsl:if>
 									<xsl:if test="(true() and boolean(*[local-name()='longitudeMax' and namespace-uri()='']))">
 										<xsl:for-each select="*[local-name()='longitudeMax' and namespace-uri()='']">
-											<xsl:variable name="var64_cur" select="."/>
+											<xsl:variable name="var74_cur" select="."/>
 											<eastBoundLongitude>
 												<xsl:value-of select="number(.)"/>
 											</eastBoundLongitude>
 										</xsl:for-each>
 									</xsl:if>
 									<xsl:if test="(true() and boolean(*[local-name()='longitudeMax' and namespace-uri()='']))">
-										<southBoundLatitude>
-											<xsl:value-of select="number(*[local-name()='latitudeMin' and namespace-uri()=''])"/>
-										</southBoundLatitude>
+										<xsl:for-each select="*[local-name()='latitudeMin' and namespace-uri()='']">
+											<xsl:variable name="var75_cur" select="."/>
+											<southBoundLatitude>
+												<xsl:value-of select="number(.)"/>
+											</southBoundLatitude>
+										</xsl:for-each>
 									</xsl:if>
 									<xsl:if test="(true() and boolean(*[local-name()='longitudeMax' and namespace-uri()='']))">
 										<xsl:for-each select="*[local-name()='latitudeMax' and namespace-uri()='']">
-											<xsl:variable name="var65_cur" select="."/>
+											<xsl:variable name="var76_cur" select="."/>
 											<northBoundLatitude>
 												<xsl:value-of select="number(.)"/>
 											</northBoundLatitude>
@@ -602,22 +683,28 @@ http://www.altova.com/mapforce
 					</xsl:for-each>
 				</geoLocations>
 				<xsl:for-each select="*[local-name()='FundingReferences' and namespace-uri()='']">
-					<xsl:variable name="var66_cur" select="."/>
+					<xsl:variable name="var77_cur" select="."/>
 					<fundingReferences>
 						<xsl:for-each select="*[local-name()='FundingReference' and namespace-uri()='']">
-							<xsl:variable name="var67_cur" select="."/>
+							<xsl:variable name="var78_cur" select="."/>
 							<fundingReference>
 								<funderName>
 									<xsl:value-of select="*[local-name()='funder' and namespace-uri()='']"/>
 								</funderName>
-								<xsl:if test="(true() and (string-length(string(number(*[local-name()='funderid' and namespace-uri()='']))) &gt; 0))">
-									<funderIdentifier>
-										<xsl:attribute name="funderIdentifierType" namespace="">
-											<xsl:value-of select="*[local-name()='funderidtyp' and namespace-uri()='']"/>
-										</xsl:attribute>
-										<xsl:attribute name="schemeURI" namespace="">https://www.crossref.org/services/funder-registry/</xsl:attribute>
-										<xsl:value-of select="concat('http://dx.doi.org/10.13039/', *[local-name()='funderid' and namespace-uri()=''])"/>
-									</funderIdentifier>
+								<xsl:if test="*[local-name()='funderid' and namespace-uri()='']">
+									<xsl:for-each select="*[local-name()='funderid' and namespace-uri()='']">
+										<xsl:variable name="var79_cur" select="."/>
+										<funderIdentifier>
+											<xsl:attribute name="schemeURI" namespace="">https://www.crossref.org/services/funder-registry/</xsl:attribute>
+											<xsl:for-each select="$var78_cur/*[local-name()='funderidtyp' and namespace-uri()='']">
+												<xsl:variable name="var80_cur" select="."/>
+												<xsl:attribute name="funderIdentifierType" namespace="">
+													<xsl:value-of select="."/>
+												</xsl:attribute>
+											</xsl:for-each>
+											<xsl:value-of select="concat('https://doi.org/10.13039/', .)"/>
+										</funderIdentifier>
+									</xsl:for-each>
 								</xsl:if>
 								<xsl:if test="((string-length(string(*[local-name()='grantnumber' and namespace-uri()=''])) &gt; 0) and true())">
 									<awardNumber>
