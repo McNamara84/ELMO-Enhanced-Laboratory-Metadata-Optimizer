@@ -13,7 +13,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends mariadb-client 
         zip \
     && rm -rf /var/lib/apt/lists/*
 
-# --- NUR FÜR TAGIFY: Node.js/npm installieren (1 Änderung) ---
+# Install Node.js and npm (for frontend dependencies like Tagify)
 RUN apt-get update && apt-get install -y curl ca-certificates gnupg \
     && curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
     && apt-get install -y nodejs \
@@ -27,7 +27,7 @@ RUN sed -i 's|/var/www/html|${APACHE_DOCUMENT_ROOT}|g' /etc/apache2/sites-availa
 # Copy application files
 COPY . /var/www/html/
 
-# --- NUR FÜR TAGIFY: npm install ausführen (2. Änderung) ---
+# Install frontend dependencies with npm (e.g. Tagify)
 WORKDIR /var/www/html
 RUN if [ -f package.json ]; then npm install --force; fi
 
