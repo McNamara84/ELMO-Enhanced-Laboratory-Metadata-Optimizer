@@ -74,7 +74,13 @@ function dropTables($connection)
         'Related_Work',
         'Resource_has_Related_Work',
         'Funding_Reference',
-        'Resource_has_Funding_Reference'
+        'Resource_has_Funding_Reference',
+        // ICGEM-specific variables to describe beautiful GGMs 
+        'GGM_Properties',
+        'Resource_has_GGM_Properties',
+        'Model_Type',
+        'Mathematical_Representation',
+        'File_Format'
     ];
 
     // Disable foreign key checks to allow dropping tables with dependencies
@@ -98,18 +104,6 @@ function dropTables($connection)
 function createDatabaseStructure($connection)
 {
     $tables = [
-        "Resource" => "CREATE TABLE IF NOT EXISTS `Resource` (
-    `resource_id` INT NOT NULL AUTO_INCREMENT,
-    `doi` VARCHAR(100) NULL,
-    `version` FLOAT NULL,
-    `year` YEAR(4) NOT NULL,
-    `dateCreated` DATE NOT NULL,
-    `dateEmbargoUntil` DATE NULL,
-    `Rights_rights_id` INT NOT NULL,
-    `Resource_Type_resource_name_id` INT NOT NULL,
-    `Language_language_id` INT NOT NULL,
-    PRIMARY KEY (`resource_id`));",
-
         "Resource_Type" => "CREATE TABLE IF NOT EXISTS `Resource_Type` (
     `resource_name_id` INT NOT NULL AUTO_INCREMENT,
     `resource_type_general` VARCHAR(30) NULL,
@@ -154,6 +148,52 @@ function createDatabaseStructure($connection)
     `title_type_id` INT NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(25) NOT NULL,
     PRIMARY KEY (`title_type_id`));",
+
+        "Model_Type" => "CREATE TABLE IF NOT EXISTS `Model_Type` (
+    `Model_type_id` INT NOT NULL AUTO_INCREMENT,
+    `name` VARCHAR(100) NOT NULL,
+    `description` TEXT NULL,
+    PRIMARY KEY (`Model_type_id`));",
+
+        "Mathematical_Representation" => "CREATE TABLE IF NOT EXISTS `Mathematical_Representation` (
+    `Mathematical_representation_id` INT NOT NULL AUTO_INCREMENT,
+    `name` VARCHAR(100) NOT NULL,
+    `description` TEXT NULL,
+    PRIMARY KEY (`Mathematical_representation_id`));",
+
+        "File_Format" => "CREATE TABLE IF NOT EXISTS `File_Format` (
+    `File_format_id` INT NOT NULL AUTO_INCREMENT,
+    `name` VARCHAR(100) NOT NULL,
+    `description` TEXT NULL,
+    PRIMARY KEY (`File_format_id`));",
+
+        "Resource" => "CREATE TABLE IF NOT EXISTS `Resource` (
+    `resource_id` INT NOT NULL AUTO_INCREMENT,
+    `doi` VARCHAR(100) NULL,
+    `version` FLOAT NULL,
+    `year` YEAR(4) NOT NULL,
+    `dateCreated` DATE NOT NULL,
+    `dateEmbargoUntil` DATE NULL,
+    `Rights_rights_id` INT NOT NULL,
+    `Resource_Type_resource_name_id` INT NOT NULL,
+    `Language_language_id` INT NOT NULL,
+    `Model_type_id` INT,
+    `Mathematical_Representation` INT,
+    `File_format_id` INT,
+    PRIMARY KEY (`resource_id`),
+    FOREIGN KEY (`Rights_rights_id`)
+    REFERENCES `Rights` (`rights_id`),
+    FOREIGN KEY (`Resource_Type_resource_name_id`)
+    REFERENCES `Resource_Type` (`resource_name_id`),
+    FOREIGN KEY (`Language_language_id`)
+    REFERENCES `Language` (`language_id`),
+    FOREIGN KEY (`Model_type_id`)
+    REFERENCES `Model_Type` (`Model_type_id`),
+    FOREIGN KEY (`Mathematical_Representation`)
+    REFERENCES `Mathematical_Representation` (`Mathematical_representation_id`),
+    FOREIGN KEY (`File_format_id`)
+    REFERENCES `File_Format` (`File_format_id`)
+    );",
 
         "Title" => "CREATE TABLE IF NOT EXISTS `Title` (
     `title_id` INT NOT NULL AUTO_INCREMENT,
@@ -254,7 +294,6 @@ function createDatabaseStructure($connection)
     FOREIGN KEY (Resource_resource_id) REFERENCES Resource (resource_id),
     FOREIGN KEY (Free_Keywords_free_keywords_id) REFERENCES Free_Keywords (free_keywords_id))",
 
-
         "Spatial_Temporal_Coverage" => "CREATE TABLE IF NOT EXISTS `Spatial_Temporal_Coverage` (
     `spatial_temporal_coverage_id` INT NOT NULL AUTO_INCREMENT,
     `latitudeMin` FLOAT NULL,
@@ -292,6 +331,17 @@ function createDatabaseStructure($connection)
     REFERENCES `Relation` (`relation_id`),
     FOREIGN KEY (`identifier_type_fk`)
     REFERENCES `Identifier_Type` (`identifier_type_id`));",
+
+        "GGM_Properties" => "CREATE TABLE IF NOT EXISTS `GGM_Properties` (
+    `GGM_Properties_id` INT NOT NULL AUTO_INCREMENT,
+    `Model_Name` VARCHAR(100) NOT NULL,
+    `Celestial_Body` VARCHAR(100) NULL,
+    `Product_Type` VARCHAR(100) NULL,
+    `Degree` INT NULL,
+    `Errors` VARCHAR(100) NULL,
+    `Error_Handling_Approach` TEXT NULL,
+    `Tide_System` VARCHAR(100) NULL,
+    PRIMARY KEY (`GGM_Properties_id`));",
 
         "Resource_has_Related_Work" => "CREATE TABLE IF NOT EXISTS `Resource_has_Related_Work` (
     `Resource_has_Related_Work_id` INT NOT NULL AUTO_INCREMENT,
@@ -337,7 +387,6 @@ function createDatabaseStructure($connection)
     REFERENCES `Resource` (`resource_id`),
     FOREIGN KEY (`Author_author_id`)
     REFERENCES `Author` (`author_id`));",
-
 
         "Author_has_Affiliation" => "CREATE TABLE IF NOT EXISTS `Author_has_Affiliation` (
     `Author_has_Affiliation_id` INT NOT NULL AUTO_INCREMENT,
@@ -437,7 +486,17 @@ function createDatabaseStructure($connection)
     FOREIGN KEY (`Resource_resource_id`)
     REFERENCES `Resource` (`resource_id`),
     FOREIGN KEY (`Spatial_Temporal_Coverage_spatial_temporal_coverage_id`)
-    REFERENCES `Spatial_Temporal_Coverage` (`spatial_temporal_coverage_id`));"
+    REFERENCES `Spatial_Temporal_Coverage` (`spatial_temporal_coverage_id`));",
+
+        "Resource_has_GGM_Properties" => "CREATE TABLE IF NOT EXISTS `Resource_has_GGM_Properties` (
+    `Resource_has_GGM_Properties_id` INT NOT NULL AUTO_INCREMENT,
+    `Resource_resource_id` INT NOT NULL,
+    `GGM_Properties_GGM_Properties_id` INT NOT NULL,
+    PRIMARY KEY (`Resource_has_GGM_Properties_id`),
+    FOREIGN KEY (`Resource_resource_id`)
+    REFERENCES `Resource` (`resource_id`),
+    FOREIGN KEY (`GGM_Properties_GGM_Properties_id`)
+    REFERENCES `GGM_Properties` (`GGM_Properties_id`));",
     ];
 
     $created = 0;
@@ -593,6 +652,22 @@ function insertLookupData($connection)
             ["name" => "URL", "description" => "Also known as web address, a URL is a specific character string that constitutes a reference to a resource. The syntax is: scheme://domain:port/path?query_string#fragment_id.", "pattern" => "(https:\/\/www\.|http:\/\/www\.|https:\/\/|http:\/\/)?[a-zA-Z0-9]{2,}(\.[a-zA-Z0-9]{2,})(\.[a-zA-Z0-9]{2,})?"],
             ["name" => "URN", "description" => "A unique and persistent identifier of an electronic document. The syntax is: urn:<NID>:<NSS>. The leading urn: sequence is case-insensitive, <NID> is the namespace identifier, <NSS> is the namespace-specific string.", "pattern" => "^urn:nbn:[a-zA-Z0-9.-]+:[a-zA-Z0-9.-]+:[a-zA-Z0-9.-]+$"],
             ["name" => "w3id", "description" => "Mostly used to publish vocabularies and ontologies. The letters ‘w3’ stand for “World Wide Web”.", "pattern" => "^https:\/\/w3id\.org\/[a-zA-Z0-9\/._-]+(?:#[a-zA-Z0-9._-]+)?$"],
+        ],
+        // ICGEM-related lookup insert
+        "File_Format" => [
+            ["name" => "icgem1.0", "description" => "icgem1.0 or ICGEM-format is a Linux /Unix ASCII-format for the representation of Earth Gravity Field models in terms of spherical harmonic coefficients"],
+            ["name" => "icgem2.0", "description" => "icgem2.0 has been introduced to indicate time-limited validity periods of the time-varying coefficients"],
+            ["name" => "ASCII", "description" => "American Standard Code for Information Interchange "]
+        ],
+        "Model_Type" => [
+            ["name" => "static", "description" => "Models of gravity field potential computed from the satellite-based gravity measurements and the spatial details of the gravity field (i.e. short wavelengths or high frequencies) are collected via terrestrial, airborne and shipborne gravity measurements and radar altimetry."],
+            ["name" => "temporal", "description" => "Models derived from input data of dedicated time periods, enabling to monitor the temporal changes in the gravity field."],
+            ["name" => "topographic", "description" => "Models represent the gravitational potential generated by the attraction of the Earth's topographic masses. Gravity from these models is computed based on very high-resolution digital elevation models which describe the shape of the Earth and model of mass densities inside the topography therefore, they are not based on real gravity measurements."],
+            ["name" => "simulated", "description" => "Models based on simulated data, not based on any measurements."]
+        ],
+        "Mathematical_Representation" => [
+            ["name" => "Spherical harmonics", "description" => "The gravitational potential is expressed as a series expansion in terms of solid spherical harmonics, which are solutions to Laplace's equation in a spherical coordinate system. This representation is the most common for global gravity field models"],
+            ["name" => "Ellipsoidal harmonics", "description" => "The gravitational potential is expressed as a series expansion in terms of ellipsoidal harmonics, which are solutions to Laplace's equation in an ellipsoidal coordinate system."]
         ]
     ];
 
