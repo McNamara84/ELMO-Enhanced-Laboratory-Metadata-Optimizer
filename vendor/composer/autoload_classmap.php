@@ -2862,6 +2862,7 @@ return array(
     'Test' => $vendorDir . '/phpunit/phpunit/tests/end-to-end/regression/5157/tests/Test.php',
     'TestEnumeration' => $vendorDir . '/phpunit/php-code-coverage/tests/_files/source_with_enum_and_enum_level_ignore_annotation.php',
     'Tests\\ApiTest' => $baseDir . '/tests/ApiTest.php',
+    'Tests\\DatabaseTestCase' => $baseDir . '/tests/DatabaseTestCase.php',
     'Tests\\SaveAuthorsTest' => $baseDir . '/tests/SaveAuthorsTest.php',
     'Tests\\SaveContactpersonsTest' => $baseDir . '/tests/SaveContactpersonsTest.php',
     'Tests\\SaveContributorsTest' => $baseDir . '/tests/SaveContributorsTest.php',
