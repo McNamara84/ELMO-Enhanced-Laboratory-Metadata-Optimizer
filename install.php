@@ -40,6 +40,8 @@ function dropTables($connection)
         'Resource',
         'Resource_has_Author',
         'Author',
+        'Author_person',
+        'Author_institution',
         'Resource_Type',
         'Rights',
         'Language',
@@ -130,12 +132,28 @@ function createDatabaseStructure($connection)
     `name` VARCHAR(20) NOT NULL,
     PRIMARY KEY (`language_id`));",
 
-        "Author" => "CREATE TABLE IF NOT EXISTS `Author` (
-    `author_id` INT NOT NULL AUTO_INCREMENT,
+
+        "Author_person" => "CREATE TABLE IF NOT EXISTS `Author_person` (
+    `author_person_id` INT NOT NULL AUTO_INCREMENT,
     `familyname` TEXT(666) NOT NULL,
     `givenname` TEXT(746) NOT NULL,
     `orcid` VARCHAR(19) NOT NULL,
-    PRIMARY KEY (`author_id`));",
+    PRIMARY KEY (`author_person_id`));",
+
+        "Author_institution" => "CREATE TABLE IF NOT EXISTS `Author_institution` (
+    `author_institution_id` INT NOT NULL AUTO_INCREMENT,
+    `institutionname` TEXT(666) NOT NULL,
+    PRIMARY KEY (`author_institution_id`));",
+
+        "Author" => "CREATE TABLE IF NOT EXISTS `Author` (
+    `author_id` INT NOT NULL AUTO_INCREMENT,
+    `Author_Person_author_person_id` INT NULL,
+    `Author_Institution_author_institution_id` INT NULL,
+    PRIMARY KEY (`author_id`),
+    FOREIGN KEY (`Author_Person_author_person_id`)
+    REFERENCES `Author_person` (`author_person_id`),
+    FOREIGN KEY (`Author_Institution_author_institution_id`)
+    REFERENCES `Author_institution` (`author_institution_id`));",
 
         "Role" => "CREATE TABLE IF NOT EXISTS `Role` (
     `role_id` INT NOT NULL AUTO_INCREMENT,
@@ -624,10 +642,20 @@ function insertTestResourceData($connection)
             ["doi" => "10.5880/GFZ.2.4.2024.001", "version" => 2.1, "year" => 2024, "dateCreated" => "1999-04-07", "dateEmbargoUntil" => "2000-12-31", "Rights_rights_id" => 1, "Resource_Type_resource_name_id" => 3, "Language_language_id" => 1],
             ["doi" => "10.21384/test-dataset", "version" => 1.23, "year" => 2024, "dateCreated" => "2023-07-02", "dateEmbargoUntil" => "2023-07-10", "Rights_rights_id" => 1, "Resource_Type_resource_name_id" => 3, "Language_language_id" => 1]
         ],
-        "Author" => [
+        "Author_person" => [
             ["familyName" => "Grzegorz", "givenname" => "Kwiatek", "orcid" => "0000-0003-1076-615X"],
             ["familyName" => "Goebel", "givenname" => "Thomas", "orcid" => "0000-0003-1552-0861"],
             ["familyName" => "Wille", "givenname" => "Christian", "orcid" => "0000-0003-0930-6527"]
+        ],
+        "Author_institution" => [
+            ["institutionname" => "Institut für Bauforschung und Bauerhaltung (IBB)"],
+            ["institutionname" => "Institut für Maschinenkonstruktion und Systemtechnik"],
+            ["institutionname" => "Institut für Luft- und Raumfahrt"]
+        ],
+        "Author" => [
+            ["Author_Person_author_person_id" => 3, "Author_Institution_author_institution_id" => 1],
+            ["Author_Person_author_person_id" => 2, "Author_Institution_author_institution_id" => 2],
+            ["Author_Person_author_person_id" => 1, "Author_Institution_author_institution_id" => 3]
         ],
         "Affiliation" => [
             ["name" => "GFZ German Research Centre for Geosciences", "rorId" => "04z8jg394"],
