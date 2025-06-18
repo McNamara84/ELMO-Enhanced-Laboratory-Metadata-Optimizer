@@ -29,6 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     require_once 'formgroups/save_spatialtemporalcoverage.php';
     require_once 'formgroups/save_relatedwork.php';
     require_once 'formgroups/save_fundingreferences.php';
+    require_once 'formgroups/save_ggmsproperties.php';
 
     // Check if this is a resource ID request
     if (isset($_POST['get_resource_id']) && $_POST['get_resource_id'] === '1') {
@@ -38,21 +39,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit();
     }
 
-    // Full save operation
+    // Saving all mandatory fields & optional fields if needed
     $resource_id = saveResourceInformationAndRights($connection, $_POST);
     saveAuthors($connection, $_POST, $resource_id);
     saveContactPerson($connection, $_POST, $resource_id);
-    saveOriginatingLaboratories($connection, $_POST, $resource_id);
-    saveContributorPersons($connection, $_POST, $resource_id);
-    saveContributorInstitutions($connection, $_POST, $resource_id);
+    if ($showMslLabs) {
+        saveOriginatingLaboratories($connection, $_POST, $resource_id);
+    }
+    if ($showContributorPersons) {
+        saveContributorPersons($connection, $_POST, $resource_id);
+    }
+    if ($showContributorInstitutions) {
+        saveContributorInstitutions($connection, $_POST, $resource_id);
+    }
     saveDescriptions($connection, $_POST, $resource_id);
-    saveKeywords($connection, $_POST, $resource_id);
-    saveFreeKeywords($connection, $_POST, $resource_id);
-    saveSpatialTemporalCoverage($connection, $_POST, $resource_id);
-    saveRelatedWork($connection, $_POST, $resource_id);
-    saveFundingReferences($connection, $_POST, $resource_id);
+    if ($showGcmdThesauri) {
+        saveKeywords($connection, $_POST, $resource_id);
+    }
+    if ($showFreeKeywords) {
+        saveFreeKeywords($connection, $_POST, $resource_id);
+    }
+    if ($showSpatialTemporalCoverage) {
+        saveSpatialTemporalCoverage($connection, $_POST, $resource_id);
+    }
+    if ($showRelatedWork) {
+        saveRelatedWork($connection, $_POST, $resource_id);
+    }
+    if ($showFundingReference) {
+        saveFundingReferences($connection, $_POST, $resource_id);
+    }
+    if ($showGGMsProperties) {
+        saveGGMsProperties($connection, $_POST, $resource_id);
+    }
 
-    // Handle file download if requested
+// Handle file download if requested
     if (isset($_POST['filename'])) {
         $filename = preg_replace('/[^a-zA-Z0-9_-]/', '_', $_POST['filename']) . '.xml';
 
@@ -60,12 +80,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         header('Content-Type: application/xml');
         header('Content-Disposition: attachment; filename="' . $filename . '"');
 
-        // Build API URL and fetch XML content
-        $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https://' : 'http://';
+        // Build base URL
+        $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') ? 'https://' : 'http://';
         $base_url = $protocol . $_SERVER['HTTP_HOST'];
         $project_path = dirname(dirname($_SERVER['PHP_SELF']));
-        $url = $base_url . $project_path . "/api/v2/dataset/export/" . $resource_id . "/all";
 
+        // Prepare and run the query
+        $stmt = $connection->prepare("
+            SELECT (Model_type_id IS NOT NULL AND File_format_id IS NOT NULL) AS is_ggm
+            FROM Resource
+            WHERE resource_id = ?
+        ");
+        $stmt->bind_param('i', $resource_id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        $is_ggm = 0; // default fallback
+
+        if ($row = $result->fetch_assoc()) {
+            $is_ggm = (int)$row['is_ggm'];
+        }
+
+        // Choose endpoint based on DB result
+        if ($is_ggm) {
+            $url = $base_url . $project_path . "/api/v2/dataset/basexport/" . $resource_id;
+        } else {
+            $url = $base_url . $project_path . "/api/v2/dataset/export/" . $resource_id . "/all";
+        }
+
+        // Read and output the file
         readfile($url);
         exit();
     }
