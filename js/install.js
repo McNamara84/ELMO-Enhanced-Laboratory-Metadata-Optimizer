@@ -71,8 +71,11 @@ document.querySelectorAll('.install-btn').forEach(button => {
 
                 // Corrected path for generate_xml_files.php (it's in the parent directory relative to js/)
                 let xmlResponse = await fetch('../generate_xml_files.php', { 
-                    method: 'POST', // Use POST if your PHP script expects it, otherwise GET
-                    // No body needed if it just triggers generation for all
+                    method: 'POST', 
+                    headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',               
+                    body: 'action=' + encodeURIComponent(dbAction)
+                },
                 });
                 let xmlData = await xmlResponse.json(); // This is where JSON parsing happens
 
