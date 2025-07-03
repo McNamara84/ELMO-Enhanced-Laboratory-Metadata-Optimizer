@@ -69,8 +69,8 @@ document.querySelectorAll('.install-btn').forEach(button => {
             if (action === 'populate-and-xml' && installationSuccess) {
                 statusMessage.innerHTML = `<div class="mb-2">Database populated. Now generating XML files...</div><div class="progress"><div class="progress-bar bg-primary" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div></div>`;
 
-                // Corrected path for generate_xml.php (it's in the parent directory relative to js/)
-                let xmlResponse = await fetch('../generate_xml.php', { 
+                // Corrected path for generate_xml_files.php (it's in the parent directory relative to js/)
+                let xmlResponse = await fetch('../generate_xml_files.php', { 
                     method: 'POST', // Use POST if your PHP script expects it, otherwise GET
                     // No body needed if it just triggers generation for all
                 });
