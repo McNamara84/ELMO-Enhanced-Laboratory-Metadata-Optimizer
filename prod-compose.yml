@@ -40,7 +40,7 @@ services:
     depends_on:
       - db # Ensures the 'db' service starts before 'web'
     restart: unless-stopped
-    volumes:
+    # volumes:
       # Mounts local directories as read-only volumes inside the container.
       # This is useful for development (instant code changes without rebuilding image)
       # or for providing dynamic content/configuration external to the image.
