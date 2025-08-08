@@ -1,0 +1,188 @@
+<div class="card mb-2">
+    <div class="card-header">
+        <b data-translate="technical.title">Technical</b>
+        <i class="bi bi-question-circle-fill" data-help-section-id="help-technical"></i>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-12 col-md-6 col-lg-2 p-1">
+                <div class="input-group has-validation">
+                    <div class="form-floating">
+                        <select class="form-select input-with-help input-right-no-round-corners" id="input-tide-system" name="tide_system" required>
+                            <option value="zero tide" data-translate="technical.tideSystemOptions.zeroTide">zero tide</option>
+                            <option value="mean tide" data-translate="technical.tideSystemOptions.meanTide">mean tide</option>
+                            <option value="tide free" data-translate="technical.tideSystemOptions.tideFree">tide free</option>
+                        </select>
+                        <label for="input-tide-system"><span data-translate="technical.tideSystem">Tide system</span> <span class="text-danger">*</span></label>
+                        <div class="invalid-feedback" data-translate="technical.tideSystemInvalid">Please choose tide system.</div>
+                    </div>
+                    <span class="input-group-text"><i class="bi bi-question-circle-fill" data-help-section-id="help-tide-system"></i></span>
+                </div>
+            </div>
+            <div class="col-12 col-md-6 col-lg-2 p-1">
+                <div class="input-group has-validation">
+                    <div class="form-floating">
+                        <select class="form-select input-with-help input-right-no-round-corners" id="input-errors" name="errors" required>
+                            <option value="calibrated" data-translate="technical.errorOptions.calibrated">calibrated</option>
+                            <option value="formal" data-translate="technical.errorOptions.formal">formal</option>
+                            <option value="no" data-translate="technical.errorOptions.no">no</option>
+                        </select>
+                        <label for="input-errors"><span data-translate="technical.errors">Errors</span> <span class="text-danger">*</span></label>
+                        <div class="invalid-feedback" data-translate="technical.errorsInvalid">Please choose error type.</div>
+                    </div>
+                    <span class="input-group-text"><i class="bi bi-question-circle-fill" data-help-section-id="help-errors"></i></span>
+                </div>
+            </div>
+            <div class="col-12 col-md-6 col-lg-6 p-1">
+                <div class="input-group has-validation">
+                    <div class="form-floating">
+                        <input type="text" class="form-control" id="input-error-handling-approach" name="error_handling_approach" pattern="^[\w\s.,()\-]*$" maxlength="255">
+                        <label for="input-error-handling-approach" data-translate="technical.errorHandling">Error handling approach</label>
+                        <div class="invalid-feedback" data-translate="technical.errorHandlingInvalid">Only letters, numbers and . , ( ) - are allowed.</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-md-6 col-lg-2 p-1">
+                <div class="input-group has-validation">
+                    <div class="form-floating">
+                        <input type="number" class="form-control input-with-help input-right-no-round-corners" id="input-degree" name="degree" min="0" step="1" required>
+                        <label for="input-degree"><span data-translate="technical.degree">Degree</span> <span class="text-danger">*</span></label>
+                        <div class="invalid-feedback" data-translate="technical.degreeInvalid">Please provide degree.</div>
+                    </div>
+                    <span class="input-group-text"><i class="bi bi-question-circle-fill" data-help-section-id="help-degree"></i></span>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <!-- Mathematical Representation triggers the visibility -->
+            <!-- This field is already handled by ggmproperties-essential.js -->
+            
+            <!-- Spherical: Radius only -->
+            <!-- input with scientific notation -->
+            <div class="col-12 col-md-6 col-lg-5 p-1 visibility-spherical" style="display: none;">
+                <div class="input-group has-validation">
+                    <div class="form-floating">
+                        <input type="number" class="form-control input-with-help" 
+                               id="input-radius-mantissa" 
+                               name="radius_mantissa" 
+                               step="any" 
+                               min="0"
+                               placeholder="6.371">
+                        <label for="input-radius-mantissa">
+                            <span data-translate="technical.radiusMantissa">Radius</span> 
+                            <span class="text-danger">*</span>
+                        </label>
+                        <div class="invalid-feedback" data-translate="technical.radiusInvalid">Please provide radius.</div>
+                    </div>
+                    
+                    <!-- Scientific notation controls -->
+                    <span class="input-group-text px-1">×10</span>
+                    
+                    <div class="input-group-scientific">
+                        <input type="number" class="form-control form-control-sm text-center" 
+                               id="input-radius-exponent" 
+                               name="radius_exponent" 
+                               value="6"
+                               min="-10" 
+                               max="10"
+                               style="width: 60px; font-size: 0.875rem;">
+                        
+                        <!-- Power adjustment buttons -->
+                        <div class="btn-group-vertical radius-power-controls" style="width: 20px;">
+                            <button type="button" class="btn btn-outline-secondary btn-sm p-0" 
+                                    id="radius-power-up" 
+                                    style="height: 15px; line-height: 1; font-size: 10px; border-radius: 0;">
+                                <i class="bi bi-chevron-up" style="font-size: 8px;"></i>
+                            </button>
+                            <button type="button" class="btn btn-outline-secondary btn-sm p-0" 
+                                    id="radius-power-down" 
+                                    style="height: 15px; line-height: 1; font-size: 10px; border-radius: 0;">
+                                <i class="bi bi-chevron-down" style="font-size: 8px;"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <span class="input-group-text"><i class="bi bi-question-circle-fill" data-help-section-id="help-radius"></i></span>
+                </div>
+                
+                <!-- Hidden field for the actual calculated radius value -->
+                <input type="hidden" id="input-radius" name="radius">
+                
+                <!-- Display calculated value -->
+                <small class="text-muted mt-1 d-block">
+                    <span data-translate="technical.calculatedValue">Calculated value:</span> 
+                    <span id="radius-display">6371000</span> 
+                    <span data-translate="technical.meters">meters</span>
+                </small>
+            </div>
+
+            <!-- Ellipsoidal: Semimajor Axis -->
+            <div class="col-12 col-md-5 col-lg-4 p-1 visibility-ellipsoidal" style="display: none;">
+                <div class="input-group has-validation">
+                    <div class="form-floating">
+                        <input type="number" class="form-control input-with-help input-right-no-round-corners" 
+                               id="input-semimajor-axis" 
+                               name="semimajor_axis_a" 
+                               step="any" 
+                               min="0">
+                        <label for="input-semimajor-axis">
+                            <span data-translate="technical.referenceEllipsoid">Semimajor axis a</span> 
+                            <span class="text-danger">*</span>
+                        </label>
+                        <div class="invalid-feedback" data-translate="technical.referenceEllipsoidInvalid">Please provide semimajor axis.</div>
+                    </div>
+                    <span class="input-group-text"><i class="bi bi-question-circle-fill" data-help-section-id="help-reference-ellipsoid"></i></span>
+                </div>
+            </div>
+
+            <!-- Ellipsoidal: Second Variable Type -->
+            <div class="col-12 col-md-3 col-lg-3 p-1 visibility-ellipsoidal" style="display: none;">
+                <div class="input-group has-validation">
+                    <div class="form-floating">
+                        <select class="form-select input-with-help input-right-no-round-corners" 
+                                id="input-second-variable" 
+                                name="second_variable">
+                            <option value="" data-translate="general.choose">Choose...</option>
+                            <option value="semimajor axis B" data-translate="technical.secondVariableOptions.axisB">axis b</option>
+                            <option value="flattening" data-translate="technical.secondVariableOptions.flattening">flattening</option>
+                            <option value="reciprocal flattening" data-translate="technical.secondVariableOptions.reciprocalFlattening">reciprocal flattening</option>
+                        </select>
+                        <label for="input-second-variable">
+                            <span data-translate="technical.secondVariable">Second variable</span> 
+                            <span class="text-danger">*</span>
+                        </label>
+                        <div class="invalid-feedback" data-translate="technical.secondVariableInvalid">Please choose second variable.</div>
+                    </div>
+                    <span class="input-group-text"><i class="bi bi-question-circle-fill" data-help-section-id="help-second-variable"></i></span>
+                </div>
+            </div>
+
+            <!-- Ellipsoidal: Second Variable Value -->
+            <div class="col-12 col-md-4 col-lg-2 p-1 visibility-ellipsoidal" style="display: none;">
+                <div class="input-group has-validation">
+                    <div class="form-floating">
+                        <input type="number" class="form-control input-with-help input-right-no-round-corners" 
+                               id="input-second-variable-value" 
+                               name="second_variable_value" 
+                               step="any">
+                        <label for="input-second-variable-value">
+                            <span data-translate="technical.secondVariableValue">Value</span> 
+                            <span class="text-danger">*</span>
+                        </label>
+                        <div class="invalid-feedback" data-translate="technical.secondVariableValueInvalid">Please provide second variable value.</div>
+                    </div>
+                    <span class="input-group-text"><i class="bi bi-question-circle-fill" data-help-section-id="help-second-variable-value"></i></span>
+                </div>
+            </div>
+            <div class="col-12 col-md-4 col-lg-5 p-1">
+                <div class="input-group has-validation">
+                    <div class="form-floating">
+                        <input type="number" class="form-control" id="input-earth-gravity-constant" name="earth_gravity_constant" step="any" min="0" required>
+                        <label for="input-earth-gravity-constant"><span data-translate="technical.earthGravityConstant">Earth gravity constant</span> <span class="text-danger">*</span></label>
+                        <div class="invalid-feedback" data-translate="technical.earthGravityConstantInvalid">Please provide earth gravity constant.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
