@@ -54,6 +54,11 @@ include $baseDir . 'header.php';
 include $baseDir . 'formgroups/resourceInformation.html';
 include $baseDir . 'formgroups/rights.html';
 include $baseDir . 'formgroups/authors.html';
+
+
+if ($showAuthorInstitution) {
+    include("formgroups/authorInstitution.html");
+}
 if ($showGGMsProperties) {
     include $baseDir . 'formgroups/GGMsProperties.html';
 }
