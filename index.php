@@ -26,6 +26,7 @@ if ($showGGMsProperties) {
     include $baseDir . 'formgroups/GGMsProperties.html';
     include $baseDir . 'formgroups/dataSources.html';
     include $baseDir . 'formgroups/GGMsTechnical.html';
+    include $baseDir . "formgroups/GGMsModelTypes.html";
 }
 if ($showContributorPersons) {
     include $baseDir . 'formgroups/contributorPersons.html';
