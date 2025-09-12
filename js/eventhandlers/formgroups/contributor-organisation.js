@@ -31,8 +31,6 @@ $(document).ready(function () {
     newContributorRow.find(".row-label").hide();
     newContributorRow.find("input").removeAttr("required");
 
-    // Replace help buttons with placeholders
-    replaceHelpButtonInClonedRows(newContributorRow);
 
     // Replace role field with fresh markup
     const roleFieldHtml = `
@@ -61,6 +59,9 @@ $(document).ready(function () {
     `;
     newContributorRow.find("#input-contributor-organisationaffiliation").closest(".input-group").replaceWith(affFieldHtml);
 
+    // Replace help buttons with placeholders
+    replaceHelpButtonInClonedRows(newContributorRow);
+
     // Update label and input field ID
     newContributorRow.find("#input-contributor-name").attr("id", `input-contributor-name${uniqueSuffix}`);
     newContributorRow.find("label[for='input-contributor-name']").attr("for", `input-contributor-name${uniqueSuffix}`);
@@ -87,7 +88,7 @@ $(document).ready(function () {
     // Add event listener to remove the row
     newContributorRow.on("click", ".removeButton", function () {
       $(this).closest(".row").remove();
-      checkMandatoryFields();
+      validateAllMandatoryFields();
     });
   });
 
