@@ -16,14 +16,6 @@ if [ ! -d /var/www/html/node_modules ]; then
   npm install --omit=dev
 fi
 
-# Ensure a settings.php exists; in production create it from settings.elmo.php,
-# so that local settings.php (dev) is not needed/overwritten.
-if [ ! -f /var/www/html/settings.php ]; then
-  echo "⚙️  No settings.php found, creating from settings.elmo.php"
-  cp /var/www/html/settings.elmo.php /var/www/html/settings.php
-  chown www-data:www-data /var/www/html/settings.php
-fi
-
 # Wait for the DB using mysqladmin ping (more reliable)
 wait_for_db() {
   echo "⏳  Waiting for MariaDB at ${DB_HOST}..."
@@ -42,7 +34,40 @@ db_has_tables() {
     TABLE_COUNT=0
   fi
   [ "${TABLE_COUNT}" -gt 0 ]
+
 }
+
+# In case a stable version of container is needed, set CONFIG_VERSION to one of:
+# Copy the appropriate .env file based on CONFIG_VERSION
+# CONFIG_VERSION determines which configuration to use.
+if [ -n "${CONFIG_VERSION}" ]; then
+    case "${CONFIG_VERSION}" in
+    "generic")
+      echo "🔧 Using generic.env configuration"
+      cp /var/www/html/envs/generic.env /var/www/html/.env
+      ;;
+    "msl")
+      echo "🔧 Using msl.env configuration"
+      cp /var/www/html/envs/msl.env /var/www/html/.env
+      ;;
+    "elmogem")
+      echo "🔧 Using elmogem.env configuration"
+      cp /var/www/html/envs/elmogem.env /var/www/html/.env
+      ;;
+    "testing")
+      echo "🔧 Using testing.env configuration"
+      cp /var/www/html/envs/testing.env /var/www/html/.env
+      ;;
+    *)
+      echo "⚠️ Invalid CONFIG_VERSION '${CONFIG_VERSION}' specified. Using generic as default configuration."
+      cp /var/www/html/envs/generic.env /var/www/html/.env
+      ;;
+    esac
+  else
+    echo "🔧 No CONFIG_VERSION specified. It is assumed, you have specified your preferences in the .env file"
+        echo "Happy coding!"
+    cp /var/www/html/envs/generic.env /var/www/html/.env
+fi
 
 wait_for_db
 
